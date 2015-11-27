@@ -55,10 +55,8 @@ BlazeComponent.extendComponent({
             listId: list._id,
             sortIndex,
           };
-          Meteor.call('importRedmine', rows, extra, (err, res) => {
-            if (err) {
-              this.setError(err.error);
-            } else if(res && res.length) {
+          Meteor.call('importCsvData', rows, extra, (err, res) => {
+            if ((!err) && res && res.length) {
               res.forEach((cardId) => {
                 // In case the filter is active we need to add the newly inserted card in
                 // the list of exceptions -- cards that are not filtered. Otherwise the

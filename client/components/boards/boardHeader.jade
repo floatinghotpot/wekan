@@ -59,7 +59,14 @@ template(name="boardMenuPopup")
         li: a.js-clone-template {{_ 'clone-template'}}
       hr
       ul.pop-over-list
+        li: a.js-export-all-cards-tsv {{_ 'exportAllCardsTsvPopup-title'}}
+      hr
+      ul.pop-over-list
         li: a.js-archive-board {{_ 'archive-board'}}
+
+template(name="exportAllCardsTsvPopup")
+  span {{_ 'select-and-copy'}}
+  textarea.js-export-all-cards-tsv
 
 template(name="cloneBoardTemplatePopup")
   ul.pop-over-list

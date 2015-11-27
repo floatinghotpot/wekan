@@ -70,7 +70,7 @@ Template.listMoveCardsPopup.events({
 });
 
 Template.listExportCardsTsvPopup.onRendered(function() {
-  Meteor.call('exportCardList', currentListId, Session.get('currentBoard'), true, (err, ret) => {
+  Meteor.call('exportCsvData', currentListId, Session.get('currentBoard'), true, (err, ret) => {
     if (!err) {
       $('.js-export-cards-tsv').val(ret);
     }
@@ -330,7 +330,7 @@ BlazeComponent.extendComponent({
           }
 
           // import batch cards will be more efficient on server-side
-          Meteor.call('importRedmine', rows, self.getAdditionalData(), (err, res) => {
+          Meteor.call('importCsvData', rows, self.getAdditionalData(), (err, res) => {
             if (err) {
               self.setError(err.error);
             } else {

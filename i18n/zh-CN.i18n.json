@@ -138,6 +138,7 @@
     "error-json-malformed": "您的文本不是正确的 JSON",
     "error-json-schema": "您的 JSON 不包含必要的正确格式信息",
     "error-list-doesNotExist": "该清单不存在",
+    "exportAllCardsTsvPopup-title": "将所有卡片导出 Excel TSV",
     "filter": "过滤",
     "filter-cards": "过滤卡片",
     "filter-clear": "清除过滤器",

@@ -6,7 +6,7 @@
 // owner -> member
 // type, category, priority -> label
 
-class RedmineImporter {
+class CsvDataImporter {
   constructor() {
     this.list = null;
     this.board = null;
@@ -100,7 +100,6 @@ class RedmineImporter {
       if (!item) continue;
       if (i === index.title) card.title = item;
       else if (i === index.desc) card.description = item;
-      else if (i === index.owner) card.userId = mapping[item];
       else if (_.contains(index.member, i)) {
         // check the member id
         const userId = mapping[item];
@@ -166,6 +165,8 @@ class RedmineImporter {
   }
 
   exportCards(filter, boardId, tsv) {
+    const cards = Cards.find(filter, { sort: ['listId', 'sort'] }).fetch();
+
     const separator = tsv ? '\t' : ',';
     const board = Boards.findOne(boardId);
     const users = board.memberUsers().fetch();
@@ -183,8 +184,6 @@ class RedmineImporter {
       maplabel[label._id] = label.name || label.color;
     });
 
-    const cards = Cards.find(filter, { sort: ['sort'] }).fetch();
-
     let maxMembers = 1;
     let maxLabels = 1;
     cards.forEach((card) => {
@@ -195,8 +194,9 @@ class RedmineImporter {
     const hlabels = _.range(maxLabels).map(() => 'label');
     const headers = ['title',
                      'description',
+                     'status',
                      'owner',
-                     'status'].concat(
+                     ].concat(
                        hmembers,
                        hlabels,
                        ['manHour',
@@ -219,8 +219,9 @@ class RedmineImporter {
       }
       const fields = [`"${card.title}"`,
                       `"${card.description || ''}"`,
+                      maplist[card.listId],
                       mapuser[card.userId],
-                      maplist[card.listId]].concat(
+                      ].concat(
                         usernames,
                         labels,
                       [card.manHour || '',
@@ -238,7 +239,7 @@ class RedmineImporter {
 }
 
 Meteor.methods({
-  importRedmine(rows, data) {
+  importCsvData(rows, data) {
     try {
       check(rows, [[String]]);
       check(data, {
@@ -248,17 +249,17 @@ Meteor.methods({
     } catch(e) {
       throw new Meteor.Error('error-json-schema');
     }
-    return new RedmineImporter().importCards(rows, data.listId, data.sortIndex);
+    return new CsvDataImporter().importCards(rows, data.listId, data.sortIndex);
   },
-  exportCardList(listId, boardId, tsv) {
+  exportCsvData(listId, boardId, tsv) {
     try {
-      check(listId, String);
+      check(listId, Match.OneOf(String, null));
       check(boardId, String);
       check(tsv, Boolean);
     } catch(e) {
       throw new Meteor.Error('error-json-schema');
     }
-    const filter = { listId, boardId, archived: false };
-    return new RedmineImporter().exportCards(filter, boardId, tsv);
+    const filter = listId ? { listId, boardId, archived:false } : { boardId, archived:false };
+    return new CsvDataImporter().exportCards(filter, boardId, tsv);
   },
 });

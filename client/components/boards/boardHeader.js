@@ -14,6 +14,7 @@ Template.boardMenuPopup.events({
     FlowRouter.go('home');
   }),
   'click .js-clone-template': Popup.open('cloneBoardTemplate'),
+  'click .js-export-all-cards-tsv': Popup.open('exportAllCardsTsv'),
 });
 
 Template.boardChangeTitlePopup.events({
@@ -300,3 +301,11 @@ BlazeComponent.extendComponent({
     }];
   },
 }).register('cloneBoardTemplatePopup');
+
+Template.exportAllCardsTsvPopup.onRendered(function() {
+  Meteor.call('exportCsvData', null, Session.get('currentBoard'), true, (err, ret) => {
+    if (!err) {
+      $('.js-export-all-cards-tsv').val(ret);
+    }
+  });
+});
