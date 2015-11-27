@@ -237,7 +237,11 @@ BlazeComponent.extendComponent({
     // skip archived lists from source
     const otherLists = [];
     lists.forEach((list) => {
-      if(!list.archived) otherLists.push(list);
+      if (!list.archived) {
+        const other = _.omit(list, ['_id', 'boardId', 'createdAt', 'updatedAt', '__proto__']);
+        other.boardId = to._id;
+        otherLists.push(other);
+      }
     });
     let i = 0;
     // we reuse and rename the existing lists, and archive the rest
@@ -245,13 +249,8 @@ BlazeComponent.extendComponent({
     myLists.forEach((list) => {
       if(list.archived) return;
       if(i < otherLists.length) {
-        const other = otherLists[i++];
         Lists.update(list._id, {
-          $set: {
-            title: other.title,
-            sort: other.sort,
-            status: other.status,
-          },
+          $set: otherLists[i++],
         });
       } else {
         list.archive();
@@ -259,13 +258,7 @@ BlazeComponent.extendComponent({
     });
     // if not enough, create new lists
     while(i < otherLists.length) {
-      const other = otherLists[i++];
-      Lists.insert({
-        boardId: Session.get('currentBoard'),
-        title: other.title,
-        sort: other.sort,
-        status: other.status,
-      });
+      Lists.insert( otherLists[i++] );
     }
   },
 

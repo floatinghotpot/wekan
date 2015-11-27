@@ -39,8 +39,7 @@ Template.listActionPopup.events({
     MultiSelection.add(cardIds);
     Popup.close();
   },
-  'click .js-export-cards': Popup.open('listExportCards'),
-  'click .js-export-cards': Popup.open('listExportCardsTsv'),
+  'click .js-export-cards-tsv': Popup.open('listExportCardsTsv'),
   'click .js-import-card-other-board': Popup.open('importCardFromOtherBoard'),
   'click .js-import-card': Popup.open('listImportCard'),
   'click .js-import-redminecsv': Popup.open('listImportRedmine'),
@@ -70,16 +69,8 @@ Template.listMoveCardsPopup.events({
   },
 });
 
-Template.listExportCardsPopup.onRendered(function() {
-  Meteor.call('exportCardList', currentListId, Session.get('currentBoard'), false, (err,ret) => {
-    if (!err) {
-      $('.js-export-cards-csv').val(ret);
-    }
-  });
-});
-
 Template.listExportCardsTsvPopup.onRendered(function() {
-  Meteor.call('exportCardList', currentListId, Session.get('currentBoard'), true, (err,ret) => {
+  Meteor.call('exportCardList', currentListId, Session.get('currentBoard'), true, (err, ret) => {
     if (!err) {
       $('.js-export-cards-tsv').val(ret);
     }
@@ -126,18 +117,17 @@ BlazeComponent.extendComponent({
       'click .js-import-card-from-list'() {
         const toList = Lists.findOne(currentListId);
         const fromList = this.currentData();
-        fromList.allCards().forEach((card) => {
-          if(card.archived) return;
-          Cards.insert({
-            listId: toList._id,
-            boardId: toList.board()._id,
-            title: card.title,
-            sort: card.sort,
-            description: card.description,
-            dueDate: card.dueDate,
-            manHour: card.manHour,
-            createdAt: card.createdAt,
+        const toBoard = toList.board();
+        fromList.cards().forEach((card) => {
+          const newCard = _.omit(card, ['_id', 'listId', 'boardId', 'labelIds', '__proto__']);
+          newCard.listId = toList._id;
+          newCard.boardId = toList.boardId;
+          newCard.labelIds = [];
+          card.labels().forEach((label) => {
+            const newLabel = toBoard.getLabel(label.name, label.color);
+            if (newLabel) newCard.labelIds.push(newLabel._id);
           });
+          Cards.insert( newCard );
         });
         Popup.close();
       },
