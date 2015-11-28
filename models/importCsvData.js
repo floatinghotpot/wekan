@@ -13,19 +13,19 @@ class CsvDataImporter {
     this.mapName2Id = {};
     this.mapIndex = {};
   }
-  
+
   findIndex(headers) {
     const index = {
       title: -1,
-      desc: -1,
+      description: -1,
       owner: -1,
       member: [],
       label: [],
       state: -1,
       manHour: -1,
       dueDate: -1,
-      createAt: -1,
-      updateAt: -1,
+      createdAt: -1,
+      updatedAt: -1,
       startDate: -1,
       finishDate: -1,
     };
@@ -36,7 +36,7 @@ class CsvDataImporter {
         break;
       case 'description':
       case 'desc':
-        index.desc = i;
+        index.description = i;
         break;
       case 'owner':
         index.owner = i;
@@ -61,11 +61,11 @@ class CsvDataImporter {
       case 'deadline':
         index.dueDate = i;
         break;
-      case 'createat':
-        index.createAt = i;
+      case 'createdat':
+        index.createdAt = i;
         break;
-      case 'updateat':
-        index.updateAt = i;
+      case 'updatedat':
+        index.updatedAt = i;
         break;
       case 'startdate':
         index.startDate = i;
@@ -77,7 +77,7 @@ class CsvDataImporter {
     }
     this.mapIndex = index;
   }
-  
+
   insertRowAsCard(items, sort) {
     const index = this.mapIndex;
     const mapping = this.mapName2Id;
@@ -99,7 +99,7 @@ class CsvDataImporter {
       const item = items[i].trim();
       if (!item) continue;
       if (i === index.title) card.title = item;
-      else if (i === index.desc) card.description = item;
+      else if (i === index.description) card.description = item;
       else if (_.contains(index.member, i)) {
         // check the member id
         const userId = mapping[item];
@@ -108,16 +108,16 @@ class CsvDataImporter {
         // convert label name to id
         const label = _.findWhere(labels, {name: item});
         if(label) card.labelIds.push(label._id);
-      } else if (i === index.createAt) {
+      } else if (i === index.createdAt) {
         const d = new Date(item);
-        if(!isNaN(d.getTime())) card.createAt = d;
-      } else if (i === index.updateAt) {
+        if(!isNaN(d.getTime())) card.createdAt = d;
+      } else if (i === index.updatedAt) {
         const d = new Date(item);
         if(!isNaN(d.getTime())) card.dateLastActivity = d;
       } else if (i === index.state) {
-        const wantedList = Lists.findOne({ 
-          boardId: this.board._id, 
-          archived: false, 
+        const wantedList = Lists.findOne({
+          boardId: this.board._id,
+          archived: false,
           title: item,
         });
         if (wantedList) {
@@ -147,7 +147,7 @@ class CsvDataImporter {
     this.board.memberUsers().forEach((user) => {
       this.mapName2Id[ user.username ] = user._id;
     });
-    
+
     if (rows.length > 0) {
       this.findIndex(rows.shift());
       const index = this.mapIndex;
@@ -160,7 +160,7 @@ class CsvDataImporter {
         return cardIds;
       }
     }
-    
+
     throw new Meteor.Error('error-json-schema');
   }
 
@@ -203,8 +203,8 @@ class CsvDataImporter {
                      'dueDate',
                      'startDate',
                      'finishDate',
-                     'createAt',
-                     'updateAt']);
+                     'createdAt',
+                     'updatedAt']);
     const dataGrid = [];
     dataGrid.push( headers.join(separator) );
 

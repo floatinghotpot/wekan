@@ -265,7 +265,7 @@ BlazeComponent.extendComponent({
     // all redmine field name should be defined in i18n for data mapping
     const currentUser = Meteor.user();
     if (currentUser && currentUser.profile && currentUser.profile.language) {
-      const fields = 'number,project,type,parent,status,priority,title,owner,member,updateat,category,version,startdate,duedate,manhour,spent,percent,createat,finishdate,related,desc'.split(',');
+      const fields = 'number,project,type,parent,status,priority,title,owner,member,updatedat,category,version,startdate,duedate,manhour,spent,percent,createdat,finishdate,related,desc'.split(',');
       // #,Project,Tracker,Parent task,Status,Priority,Subject,Author,Assignee,Updated,Category,Target version,Start date,Due date,Estimated time,Spent time,% Done,Created,Closed,Related issues,Description
       const lang = currentUser.profile.language;
       const langFields = TAPi18n.__('redmine-csv-headers', {}, lang).split(',');
