@@ -39,6 +39,7 @@ Template.listActionPopup.events({
     MultiSelection.add(cardIds);
     Popup.close();
   },
+  'click .js-import-cards-tsv': Popup.open('listImportCardsTsv'),
   'click .js-export-cards-tsv': Popup.open('listExportCardsTsv'),
   'click .js-import-card-other-board': Popup.open('importCardFromOtherBoard'),
   'click .js-import-card': Popup.open('listImportCard'),
