@@ -51,4 +51,13 @@ if (Meteor.isServer) {
   if (process.env.MAIL_FROM) {
     Accounts.emailTemplates.from = process.env.MAIL_FROM;
   }
+
+  ['resetPassword-subject', 'resetPassword-text', 'verifyEmail-subject', 'verifyEmail-text', 'enrollAccount-subject', 'enrollAccount-text'].forEach((str) => {
+    const words = str.split('-');
+    Accounts.emailTemplates[words[0]][words[1]] = (user, url) => {
+      const lang = (user.profile && user.profile.language) ? user.profile.language : 'en';
+      const name = (user.profile && user.profile.name) ? user.profile.name : user.username;
+      return TAPi18n.__(`email-${str}`, { user: name, url }, lang);
+    };
+  });
 }

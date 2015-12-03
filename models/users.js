@@ -41,6 +41,16 @@ Users.helpers({
     return _.contains(starredBoards, boardId);
   },
 
+  invitedBoards() {
+    const {invitedBoards = []} = this.profile;
+    return Boards.find({archived: false, _id: {$in: invitedBoards}});
+  },
+
+  isInvitedTo(boardId) {
+    const {invitedBoards = []} = this.profile;
+    return _.contains(invitedBoards, boardId);
+  },
+
   getAvatarUrl() {
     // Although we put the avatar picture URL in the `profile` object, we need
     // to support Sandstorm which put in the `picture` attribute by default.
@@ -80,6 +90,22 @@ Users.mutations({
     };
   },
 
+  addInvite(boardId) {
+    return {
+      $addToSet: {
+        'profile.invitedBoards': boardId,
+      },
+    };
+  },
+
+  removeInvite(boardId) {
+    return {
+      $pull: {
+        'profile.invitedBoards': boardId,
+      },
+    };
+  },
+
   setAvatarUrl(avatarUrl) {
     return { $set: { 'profile.avatarUrl': avatarUrl }};
   },
@@ -96,6 +122,78 @@ Meteor.methods({
     }
   },
 });
+
+if (Meteor.isServer) {
+  Meteor.methods({
+    inviteUserToBoard(username, boardId) {
+      check(username, String);
+      check(boardId, String);
+
+      const inviter = Meteor.user();
+      const board = Boards.findOne(boardId);
+      const allowInvite = inviter &&
+          board &&
+          board.members &&
+          _.contains(_.pluck(board.members, 'userId'), inviter._id) &&
+          _.where(board.members, {userId: inviter._id})[0].isActive &&
+          _.where(board.members, {userId: inviter._id})[0].isAdmin;
+      if (!allowInvite) throw new Meteor.Error('error-board-notAMember');
+
+      this.unblock();
+
+      const posAt = username.indexOf('@');
+      let user = Users.findOne((posAt >= 0) ? {emails: {$elemMatch: {address: username}}} : { username });
+      if (user) {
+        if (user._id === inviter._id) throw new Meteor.Error('error-user-notAllowSelf');
+      } else {
+        if (posAt <= 0) throw new Meteor.Error('error-user-doesNotExist');
+
+        const email = username;
+        username = email.substring(0, posAt);
+        const newUserId = Accounts.createUser({ username, email });
+        if (!newUserId) throw new Meteor.Error('error-user-notCreated');
+        // assume new user speak same language with inviter
+        if (inviter.profile && inviter.profile.language) {
+          Users.update(newUserId, {
+            $set: {
+              'profile.language': inviter.profile.language,
+            },
+          });
+        }
+        Accounts.sendEnrollmentEmail(newUserId);
+        user = Users.findOne(newUserId);
+      }
+
+      board.addMember(user._id);
+      user.addInvite(boardId);
+
+      try {
+        const lang = (user.profile && user.profile.language) ? user.profile.language : 'en';
+
+        let rootUrl = process.env.ROOT_URL || '';
+        if (!rootUrl.endsWith('/')) rootUrl = `${rootUrl}/`;
+        const boardUrl = `${rootUrl}b/${board._id}/${board.slug}`;
+
+        const vars = {
+          user: user.username,
+          inviter: inviter.username,
+          board: board.title,
+          url: boardUrl,
+        };
+        Email.send({
+          to: user.emails[0].address,
+          from: Accounts.emailTemplates.from,
+          subject: TAPi18n.__('email-invite-subject', vars, lang),
+          text: TAPi18n.__('email-invite-text', vars, lang),
+        });
+      } catch (e) {
+        throw new Meteor.Error('email-fail', e.message);
+      }
+
+      return { username: user.username, email: user.emails[0].address };
+    },
+  });
+}
 
 Users.before.insert((userId, doc) => {
   doc.profile = doc.profile || {};

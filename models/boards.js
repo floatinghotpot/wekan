@@ -189,7 +189,6 @@ Boards.mutations({
   },
 
   addMember(memberId) {
-    if (memberId === Meteor.userId()) return null;
     const memberIndex = this.memberIndex(memberId);
     if (memberIndex === -1) {
       return {
@@ -202,28 +201,29 @@ Boards.mutations({
         },
       };
     } else {
+      const isAdmin = (memberId === Meteor.userId());
       return {
         $set: {
           [`members.${memberIndex}.isActive`]: true,
-          [`members.${memberIndex}.isAdmin`]: false,
+          [`members.${memberIndex}.isAdmin`]: isAdmin,
         },
       };
     }
   },
 
   removeMember(memberId) {
-    if (memberId === Meteor.userId()) return null;
+    const isAdmin = (memberId === Meteor.userId());
     const memberIndex = this.memberIndex(memberId);
 
     return {
       $set: {
-        [`members.${memberIndex}.isActive`]: false,
+        [`members.${memberIndex}.isActive`]: isAdmin,
       },
     };
   },
 
   setMemberPermission(memberId, isAdmin) {
-    if (memberId === Meteor.userId()) return null;
+    if (memberId === Meteor.userId()) isAdmin = true;
     const memberIndex = this.memberIndex(memberId);
 
     return {

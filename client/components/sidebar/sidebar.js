@@ -194,25 +194,70 @@ function draggableMembersLabelsWidgets() {
 Template.membersWidget.onRendered(draggableMembersLabelsWidgets);
 Template.labelsWidget.onRendered(draggableMembersLabelsWidgets);
 
-Template.addMemberPopup.helpers({
+BlazeComponent.extendComponent({
+  template() {
+    return 'addMemberPopup';
+  },
+
+  onCreated() {
+    this.error = new ReactiveVar('');
+    this.loading = new ReactiveVar(false);
+  },
+
+  onRendered() {
+    this.find('.js-search-member input').focus();
+    this.setLoading(false);
+  },
+
   isBoardMember() {
-    const user = Users.findOne(this._id);
+    const userId = this.currentData()._id;
+    const user = Users.findOne(userId);
     return user && user.isBoardMember();
   },
-});
 
-Template.addMemberPopup.events({
-  'click .js-select-member'() {
-    const userId = this._id;
-    const currentBoard = Boards.findOne(Session.get('currentBoard'));
-    currentBoard.addMember(userId);
-    Popup.close();
+  isValidEmail(email) {
+    const re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+    return re.test(email);
   },
-});
 
-Template.addMemberPopup.onRendered(function() {
-  this.find('.js-search-member input').focus();
-});
+  setError(error) {
+    this.error.set(error);
+  },
+
+  setLoading(w) {
+    this.loading.set(w);
+  },
+
+  isLoading() {
+    return this.loading.get();
+  },
+
+  events() {
+    return [{
+      'keyup input'() {
+        this.setError('');
+      },
+      'click .js-select-member'() {
+        const userId = this.currentData()._id;
+        const currentBoard = Boards.findOne(Session.get('currentBoard'));
+        currentBoard.addMember(userId);
+        Popup.close();
+      },
+      'click .js-email-invite'() {
+        const email = $('.js-search-member input').val();
+        if (email.indexOf('@')<0 || this.isValidEmail(email)) {
+          this.setLoading(true);
+          const self = this;
+          Meteor.call('inviteUserToBoard', email, Session.get('currentBoard'), (err, ret) => {
+            self.setLoading(false);
+            if (err) self.setError(err.error);
+            else if (ret.username && ret.email) self.setError('email-sent');
+          });
+        } else this.setError('email-invalid');
+      },
+    }];
+  },
+}).register('addMemberPopup');
 
 Template.changePermissionsPopup.events({
   'click .js-set-admin, click .js-set-normal'(event) {
