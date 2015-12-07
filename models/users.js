@@ -135,6 +135,7 @@ Meteor.methods({
 
 if (Meteor.isServer) {
   Meteor.methods({
+    // we accept userId, username, email
     inviteUserToBoard(username, boardId) {
       check(username, String);
       check(boardId, String);
@@ -152,7 +153,12 @@ if (Meteor.isServer) {
       this.unblock();
 
       const posAt = username.indexOf('@');
-      let user = Users.findOne((posAt >= 0) ? {emails: {$elemMatch: {address: username}}} : { username });
+      let user = null;
+      if (posAt>=0) {
+        user = Users.findOne({emails: {$elemMatch: {address: username}}});
+      } else {
+        user = Users.findOne(username) || Users.findOne({ username });
+      }
       if (user) {
         if (user._id === inviter._id) throw new Meteor.Error('error-user-notAllowSelf');
       } else {
@@ -177,10 +183,10 @@ if (Meteor.isServer) {
       board.addMember(user._id);
       user.addInvite(boardId);
 
-      try {
-        const lang = (user.profile && user.profile.language) ? user.profile.language : 'en';
+      if (!process.env.MAIL_URL || (!Email)) return { username: user.username };
 
-        let rootUrl = process.env.ROOT_URL || '';
+      try {
+        let rootUrl = Meteor.absoluteUrl.defaultOptions.rootUrl || '';
         if (!rootUrl.endsWith('/')) rootUrl = `${rootUrl}/`;
         const boardUrl = `${rootUrl}b/${board._id}/${board.slug}`;
 
@@ -190,6 +196,7 @@ if (Meteor.isServer) {
           board: board.title,
           url: boardUrl,
         };
+        const lang = user.getLanguage();
         Email.send({
           to: user.emails[0].address,
           from: Accounts.emailTemplates.from,

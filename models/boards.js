@@ -99,6 +99,10 @@ Boards.helpers({
     return _.where(this.members, {isActive: true});
   },
 
+  activeAdmins() {
+    return _.where(this.members, {isActive: true, isAdmin: true});
+  },
+
   memberUsers() {
     return Users.find({ _id: {$in: _.pluck(this.members, 'userId')} });
   },
@@ -191,40 +195,65 @@ Boards.mutations({
   addMember(memberId) {
     const memberIndex = this.memberIndex(memberId);
     if (memberIndex === -1) {
-      return {
-        $push: {
-          members: {
-            userId: memberId,
-            isAdmin: false,
-            isActive: true,
+      const xIndex = this.memberIndex('x');
+      if (xIndex === -1) {
+        return {
+          $push: {
+            members: {
+              userId: memberId,
+              isAdmin: false,
+              isActive: true,
+            },
           },
-        },
-      };
+        };
+      } else {
+        return {
+          $set: {
+            [`members.${xIndex}.userId`]: memberId,
+            [`members.${xIndex}.isActive`]: true,
+            [`members.${xIndex}.isAdmin`]: false,
+          },
+        };
+      }
     } else {
-      const isAdmin = (memberId === Meteor.userId());
       return {
         $set: {
           [`members.${memberIndex}.isActive`]: true,
-          [`members.${memberIndex}.isAdmin`]: isAdmin,
         },
       };
     }
   },
 
   removeMember(memberId) {
-    const isAdmin = (memberId === Meteor.userId());
     const memberIndex = this.memberIndex(memberId);
 
-    return {
-      $set: {
-        [`members.${memberIndex}.isActive`]: isAdmin,
-      },
-    };
+    // we do not allow the only one admin to be removed
+    const allowRemove = (!this.members[memberIndex].isAdmin) || (this.activeAdmins().length > 1);
+
+    if (allowRemove) {
+      return {
+        $set: {
+          [`members.${memberIndex}.userId`]: 'x',
+          [`members.${memberIndex}.isActive`]: false,
+          [`members.${memberIndex}.isAdmin`]: false,
+        },
+      };
+    } else {
+      return {
+        $set: {
+          [`members.${memberIndex}.isActive`]: true,
+        },
+      };
+    }
   },
 
   setMemberPermission(memberId, isAdmin) {
-    if (memberId === Meteor.userId()) isAdmin = true;
     const memberIndex = this.memberIndex(memberId);
+
+    // do not allow change permission of self
+    if (memberId === Meteor.userId()) {
+      isAdmin = this.members[memberIndex].isAdmin;
+    }
 
     return {
       $set: {
@@ -262,9 +291,7 @@ if (Meteor.isServer) {
         return false;
 
       // If there is more than one admin, it's ok to remove anyone
-      const nbAdmins = _.filter(doc.members, (member) => {
-        return member.isAdmin;
-      }).length;
+      const nbAdmins = _.where(doc.members, {isActive: true, isAdmin: true}).length;
       if (nbAdmins > 1)
         return false;
 
@@ -277,6 +304,21 @@ if (Meteor.isServer) {
       }));
     },
     fetch: ['members'],
+  });
+
+  Meteor.methods({
+    quitBoard(boardId) {
+      check(boardId, String);
+      const board = Boards.findOne(boardId);
+      if (board) {
+        const userId = Meteor.userId();
+        const index = board.memberIndex(userId);
+        if (index>=0) {
+          board.removeMember(userId);
+          return true;
+        } else throw new Meteor.Error('error-board-notAMember');
+      } else throw new Meteor.Error('error-board-doesNotExist');
+    },
   });
 }
 
