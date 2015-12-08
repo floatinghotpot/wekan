@@ -59,6 +59,7 @@ ongoworks:speakingurl
 raix:handlebar-helpers
 tap:i18n
 http
+harrison:papa-parse
 
 # UI components
 blaze
@@ -74,4 +75,3 @@ perak:markdown
 seriousm:emoji-continued
 templates:tabs
 verron:autosize
-harrison:papa-parse

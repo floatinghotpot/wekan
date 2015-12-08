@@ -2,19 +2,10 @@ Meteor.subscribe('boards');
 
 BlazeLayout.setRoot('body');
 
-// see: https://github.com/softwarerero/meteor-accounts-t9n#language-codes-and-contributions
-const mapTagi18nToT9n = {
-  'es-ES': 'es_ES',
-  'no-NB': 'no_NB',
-  'pt-BR': 'pt',
-  'pt-PT': 'pt_PT',
-  'zh-CN': 'zh_cn',
-  'zh-HK': 'zh_hk',
-  'zh-TW': 'zh_tw',
-};
-
 const i18nTagToT9n = (i18nTag) => {
-  return mapTagi18nToT9n[i18nTag] || i18nTag.split('-')[0];
+  // t9n/i18n tags are same now, see: https://github.com/softwarerero/meteor-accounts-t9n/pull/129
+  // but we keep this conversion function here, to be aware that that they are different system.
+  return i18nTag;
 };
 
 Template.userFormsLayout.onRendered(() => {
