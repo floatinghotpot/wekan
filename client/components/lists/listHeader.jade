@@ -156,7 +156,7 @@ template(name="listSettingsPopup")
 
 template(name="listMembersPopup")
   ul.pop-over-list.js-list-member-list
-    each board.members
+    each board.activeMembers
       li.item(class="{{#if isListMember}}active{{/if}}")
         a.name.js-select-member(href="#")
           +userAvatar(userId=user._id listId=list._id)

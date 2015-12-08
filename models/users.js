@@ -12,16 +12,12 @@ if (Meteor.isClient) {
   Users.helpers({
     isBoardMember() {
       const board = Boards.findOne(Session.get('currentBoard'));
-      return board &&
-        _.contains(_.pluck(board.members, 'userId'), this._id) &&
-        _.where(board.members, {userId: this._id})[0].isActive;
+      return board && board.hasMember(this._id);
     },
 
     isBoardAdmin() {
       const board = Boards.findOne(Session.get('currentBoard'));
-      return board &&
-        this.isBoardMember(board) &&
-        _.where(board.members, {userId: this._id})[0].isAdmin;
+      return board && board.hasAdmin(this._id);
     },
   });
 }
@@ -142,12 +138,7 @@ if (Meteor.isServer) {
 
       const inviter = Meteor.user();
       const board = Boards.findOne(boardId);
-      const allowInvite = inviter &&
-          board &&
-          board.members &&
-          _.contains(_.pluck(board.members, 'userId'), inviter._id) &&
-          _.where(board.members, {userId: inviter._id})[0].isActive &&
-          _.where(board.members, {userId: inviter._id})[0].isAdmin;
+      const allowInvite = inviter && board && board.hasAdmin(inviter._id);
       if (!allowInvite) throw new Meteor.Error('error-board-notAMember');
 
       this.unblock();

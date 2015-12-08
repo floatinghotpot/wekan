@@ -28,7 +28,7 @@ Template.editor.onRendered(() => {
       match: /\B@(\w*)$/,
       search(term, callback) {
         const currentBoard = Boards.findOne(Session.get('currentBoard'));
-        callback(currentBoard.members.map((member) => {
+        callback(currentBoard.activeMembers().map((member) => {
           const username = Users.findOne(member.userId).username;
           return username.includes(term) ? username : null;
         }));
@@ -56,7 +56,7 @@ const at = HTML.CharRef({html: '&commat;', str: '@'});
 Blaze.Template.registerHelper('mentions', new Template('mentions', function() {
   const view = this;
   const currentBoard = Boards.findOne(Session.get('currentBoard'));
-  const knowedUsers = currentBoard.members.map((member) => {
+  const knowedUsers = currentBoard.activeMembers().map((member) => {
     member.username = Users.findOne(member.userId).username;
     return member;
   });

@@ -18,7 +18,7 @@ template(name="filterSidebar")
             i.fa.fa-check
   hr
   ul.sidebar-list
-    each currentBoard.members
+    each currentBoard.activeMembers
       if isActive
         with getUser userId
           li(class="{{#if Filter.members.isSelected _id}}active{{/if}}")
@@ -55,7 +55,7 @@ template(name="multiselectionSidebar")
             i.fa.fa-ellipsis-h
   hr
   ul.sidebar-list
-    each currentBoard.members
+    each currentBoard.activeMembers
       if isActive
         with getUser userId
           li(class="{{#if Filter.members.isSelected _id}}active{{/if}}")
