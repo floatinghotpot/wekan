@@ -163,6 +163,8 @@
     "filter": "Filter",
     "filter-cards": "Filter Cards",
     "filter-clear": "Clear filter",
+    "filter-creater": "Filter creater",
+    "filter-members": "Filter members",
     "filter-on": "Filter is on",
     "filter-on-desc": "You are filtering cards on this board. Click here to edit filter.",
     "filter-to-selection": "Filter to selection",

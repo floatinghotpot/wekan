@@ -3,6 +3,18 @@ BlazeComponent.extendComponent({
     return 'filterSidebar';
   },
 
+  onCreated() {
+    this.ownerFilter = new ReactiveVar(false);
+  },
+
+  isOwnerFilter() {
+    return this.ownerFilter.get();
+  },
+
+  setOwnerFilter(tf) {
+    return this.ownerFilter.set(tf);
+  },
+
   events() {
     return [{
       'click .js-toggle-label-filter'(evt) {
@@ -10,9 +22,23 @@ BlazeComponent.extendComponent({
         Filter.labelIds.toggle(this.currentData()._id);
         Filter.resetExceptions();
       },
+      'click .js-set-owner-filter'(evt) {
+        evt.stopPropagation();
+        Filter.reset();
+        this.setOwnerFilter(true);
+      },
+      'click .js-unset-owner-filter'(evt) {
+        evt.stopPropagation();
+        Filter.reset();
+        this.setOwnerFilter(false);
+      },
       'click .js-toggle-member-filter'(evt) {
         evt.preventDefault();
-        Filter.members.toggle(this.currentData()._id);
+        if (this.isOwnerFilter()) {
+          Filter.userId.toggle(this.currentData()._id);
+        } else {
+          Filter.members.toggle(this.currentData()._id);
+        }
         Filter.resetExceptions();
       },
       'click .js-clear-all'(evt) {

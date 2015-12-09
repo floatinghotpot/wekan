@@ -17,18 +17,29 @@ template(name="filterSidebar")
           if Filter.labelIds.isSelected _id
             i.fa.fa-check
   hr
+  a.sidebar-btn.js-set-owner-filter
+    i.fa.fa-user
+    span {{_ 'filter-creater'}}
+    if isOwnerFilter
+      i.fa.fa-check
+  a.sidebar-btn.js-unset-owner-filter
+    i.fa.fa-user
+    span {{_ 'filter-members'}}
+    unless isOwnerFilter
+      i.fa.fa-check
   ul.sidebar-list
     each currentBoard.activeMembers
-      if isActive
-        with getUser userId
-          li(class="{{#if Filter.members.isSelected _id}}active{{/if}}")
-            a.name.js-toggle-member-filter
-              +userAvatar(userId=this._id)
-              span.sidebar-list-item-description
-                = profile.fullname
-                | (<span class="username">{{ username }}</span>)
-              if Filter.members.isSelected _id
-                i.fa.fa-check
+      with getUser userId
+        li(class="{{#if Filter.members.isSelected _id}}active{{/if}}")
+          a.name.js-toggle-member-filter
+            +userAvatar(userId=this._id)
+            span.sidebar-list-item-description
+              = profile.fullname
+              | (<span class="username">{{ username }}</span>)
+            if Filter.members.isSelected _id
+              i.fa.fa-check
+            else if Filter.userId.isSelected _id
+              i.fa.fa-check
   if Filter.isActive
     hr
     a.sidebar-btn.js-clear-all
@@ -56,18 +67,17 @@ template(name="multiselectionSidebar")
   hr
   ul.sidebar-list
     each currentBoard.activeMembers
-      if isActive
-        with getUser userId
-          li(class="{{#if Filter.members.isSelected _id}}active{{/if}}")
-            a.name.js-toggle-member-multiselection
-              +userAvatar(userId=this._id)
-              span.sidebar-list-item-description
-                = profile.fullname
-                | (<span class="username">{{ username }}</span>)
-              if allSelectedElementHave 'member' _id
-                i.fa.fa-check
-              else if someSelectedElementHave 'member' _id
-                i.fa.fa-ellipsis-h
+      with getUser userId
+        li(class="{{#if Filter.members.isSelected _id}}active{{/if}}")
+          a.name.js-toggle-member-multiselection
+            +userAvatar(userId=this._id)
+            span.sidebar-list-item-description
+              = profile.fullname
+              | (<span class="username">{{ username }}</span>)
+            if allSelectedElementHave 'member' _id
+              i.fa.fa-check
+            else if someSelectedElementHave 'member' _id
+              i.fa.fa-ellipsis-h
   hr
   a.sidebar-btn.js-archive-selection
     i.fa.fa-archive
