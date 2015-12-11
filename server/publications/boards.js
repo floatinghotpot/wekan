@@ -16,14 +16,7 @@ Meteor.publish('boards', function() {
   return Boards.find({
     archived: false,
     $or: [
-      {
-        members: {
-          $elemMatch: {
-            userId: this.userId,
-            isActive: true,
-          },
-        },
-      },
+      { members: { $elemMatch: { userId: this.userId, isActive: true }}},
       { _id: { $in: starredBoards } },
     ],
   }, {
@@ -73,14 +66,7 @@ Meteor.publishComposite('board', function(boardId) {
         // it.
         $or: [
           { permission: 'public' },
-          {
-            members: {
-              $elemMatch: {
-                userId: this.userId,
-                isActive: true,
-              },
-            },
-          },
+          { members: { $elemMatch: { userId: this.userId, isActive: true }}},
         ],
       }, { limit: 1 });
     },

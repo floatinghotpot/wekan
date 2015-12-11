@@ -30,19 +30,13 @@ template(name="listActionPopup")
   if cards.count
     ul.pop-over-list
       li: a.js-select-cards {{_ 'list-select-cards'}}
-      li: a.js-move-cards {{_ 'list-move-cards'}}
       li: a.js-export-cards-tsv {{_ 'listExportCardsTsvPopup-title'}}
     hr
   ul.pop-over-list
-    if cards.count
-      li: a.js-archive-cards {{_ 'list-archive-cards'}}
     li: a.js-close-list {{_ 'archive-list'}}
   hr
   ul.pop-over-list
     li: a.js-list-settings {{_ 'settings'}}
-
-template(name="listMoveCardsPopup")
-  +boardLists
 
 template(name="importCardFromOtherBoardPopup")
   ul.pop-over-list
@@ -88,10 +82,6 @@ template(name="listImportRedminePopup")
 template(name="listExportCardsTsvPopup")
   span {{_ 'select-and-copy'}}
   textarea.js-export-cards-tsv
-
-template(name="listArchiveCardsPopup")
-  p {{_ 'list-archive-cards-pop'}}
-  input.js-confirm.negate.full(type="submit" value="{{_ 'archive-all'}}")
 
 template(name="listSettingsPopup")
   h3
