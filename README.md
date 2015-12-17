@@ -23,6 +23,8 @@ that by providing one-click installation on Heroku or [Sandstorm]
 
 [![Deploy][heroku_button]][heroku_deploy]
 
+[![Deploy to Scalingo][scalingo_button]][scalingo_deploy]
+
 Wekan is released under the very permissive [MIT license](LICENSE), and made
 with [Meteor](https://www.meteor.com).
 
@@ -36,6 +38,8 @@ with [Meteor](https://www.meteor.com).
 [docker_image]: https://hub.docker.com/r/mquandalle/wekan/
 [heroku_button]: https://www.herokucdn.com/deploy/button.png
 [heroku_deploy]: https://heroku.com/deploy?template=https://github.com/wekan/wekan/tree/master
+[scalingo_button]: https://cdn.scalingo.com/deploy/button.svg
+[scalingo_deploy]: https://my.scalingo.com/deploy?source=https://github.com/wekan/wekan#devel
 
 # Cn-WeKan
 
@@ -44,8 +48,9 @@ with [Meteor](https://www.meteor.com).
 ## 操作优化
 * 附件上传支持复制粘贴图片、拖放文件
 * 点击卡片附件的小图，能够快速预览大图
-* 中文翻译全部语句
+* 中文翻译
 * 在登录界面自动显示和选择语言
+* 支持移动设备访问（手机浏览器，或APP内嵌的浏览器）
 
 ## 批量处理
 * 新建看板时，可从把现有看板作为模版，导入清单、成员、标签（例如：可以为迭代、Bug单快速建立看板）
@@ -62,7 +67,7 @@ with [Meteor](https://www.meteor.com).
 
 ## 数据迁移
 * 可以导入、导出 Excel CSV/TSV 数据
-* 支持从 Redmine 导出的 CSV 文件导入 WeKan，并保留所有信息（附件除外）
+* 支持从 Redmine 导出的 CSV 文件导入 WeKan
 
 ## 其他
 * 原作者 Maxime Quandalle 提供的新功能，我会定期合并进来。
