@@ -42,34 +42,37 @@ with [Meteor](https://www.meteor.com).
 [scalingo_deploy]: https://my.scalingo.com/deploy?source=https://github.com/wekan/wekan#devel
 
 
-## Cn-WeKan
+## Cn-Wekan
 
-除了原作者（Maxime Quandalle）提供的功能外，我（Raymond Xie）新增了如下功能（感谢原作者的优秀架构，在原作基础上新增功能还是比较容易的）：
+Besides the features provided by author of Wekan (Maxime Quandalle), I (Raymond Xie) added following features (Thanks to the excellent architecture by author, it's quite easy to add new features):
 
-### 操作优化
-* [x] 附件上传支持复制粘贴图片、拖放文件
-* [x] 点击卡片附件的小图，能够快速预览大图
-* [x] 中文翻译
-* [x] 在登录界面自动显示和选择语言
-* [x] 支持移动设备访问（手机浏览器，或APP内嵌的浏览器）
+### Improve Usability
+* [x] Upload attachment from clipboard, drag & drop.
+* [x] Preview attached pictures.
+* [x] Translation of zh-CN.
+* [x] On login form, auto show preferred language and allow selecting.
+* [x] Support compact mode for mobile web
+* [ ] Show card creater, allow filter by card creater.
 
-### 批量处理
-* [ ] 新建看板时，可从把现有看板作为模版，导入清单、成员、标签（例如：可以为迭代、Bug单快速建立看板）
-* [ ] 从另一看板的某清单导入全部卡片（例如，可以把项目计划中的内容快速导入迭代看板）
+### Batch Job
+* [ ] Import template from another board (lists, members, labels), to quickly setup a board from template.
+* [ ] Import all cards from another board/list（For example, import project plan to iteractoin board)
 
-### 时间管理
-* [ ] 为卡片增加工作量、截止日期、开始、完成日期，并显示在小卡片上
-* [ ] 可以给清单定义属性，当卡片拖入清单的时候，自动重置时间或者记录开始、完成日期
+### Time Management
+* [ ] Add man hour, due date, start date, finish date to card
+* [ ] Display due date on mini card
+* [ ] Configure list settings, when card drop into list, auto record start date, finish date.
 
-### 消息推送
-* [ ] 集成 [QQ机器人/smart-bot](https://github.com/floatinghotpot/qqbot)，可在自己的用户资料中输入自己的QQ号，用来接收消息
-* [ ] 可以为每列清单定义属性，当卡片拖入时，QQ消息推送给卡片创建人、卡片成员、清单关注人
-* [ ] 当卡片指定成员、或者有人留言的时候，QQ消息推送给相关人
+### Push Notification
+* [ ] Integrate with [QQ/smartqq-bot](https://github.com/floatinghotpot/qqbot)
+* [ ] Input QQ number to user profile to accept notification.
+* [ ] Configure list settings, when card drop into list, push notification to card creater, member, or list observer.
+* [ ] When card assigned to member, or commented, push notification to card members.
 
-### 数据迁移
-* [ ] 可以导入、导出 Excel CSV/TSV 数据
-* [ ] 支持从 Redmine 导出的 CSV 文件导入 WeKan
+### Data Migration
+* [ ] Export/import cards with Excel CSV/TSV (Directly copy/paste in Excel)
+* [ ] Import CSV file exported from Redmine
 
-### 其他
-* 原作者 Maxime Quandalle 提供的新功能，我会定期合并进来。
-* 我也会把自己实现的部分功能，提交给原作者（以上标记 [v] 的部分，即已经被纳入主干版本）
+### Other
+* Constantly merge the original branch, keep up to date
+* I will also create PR of my features, and push to Maxime Quandalle ([v] marked above, means already merged)
