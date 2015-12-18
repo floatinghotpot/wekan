@@ -51,7 +51,7 @@ Besides the features provided by author of Wekan (Maxime Quandalle), I (Raymond 
 * [x] Preview attached pictures.
 * [x] Translation of zh-CN.
 * [x] On login form, auto show preferred language and allow selecting.
-* [x] Support compact mode for mobile web
+* [x] Add compact mode for mobile web.
 * [ ] Show card creater, allow filter by card creater.
 
 ### Batch Job
@@ -63,7 +63,8 @@ Besides the features provided by author of Wekan (Maxime Quandalle), I (Raymond 
 * [ ] Display due date on mini card
 * [ ] Configure list settings, when card drop into list, auto record start date, finish date.
 
-### Push Notification
+### Notification & Social Interaction
+* [x] Invite new user to board by sending invitation email.
 * [ ] Integrate with [QQ/smartqq-bot](https://github.com/floatinghotpot/qqbot)
 * [ ] Input QQ number to user profile to accept notification.
 * [ ] Configure list settings, when card drop into list, push notification to card creater, member, or list observer.
@@ -75,4 +76,4 @@ Besides the features provided by author of Wekan (Maxime Quandalle), I (Raymond 
 
 ### Other
 * Constantly merge the original branch, keep up to date
-* I will also create PR of my features, and push to Maxime Quandalle ([v] marked above, means already merged)
+* Above items marked [v], have been merged into Wekan main branch.
