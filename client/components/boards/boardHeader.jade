@@ -75,6 +75,7 @@ template(name="boardMenuPopup")
         li: a.js-clone-template {{_ 'clone-template'}}
       hr
       ul.pop-over-list
+        li: a(href="{{exportUrl}}", download="{{exportFilename}}") {{_ 'export-board'}}
         li: a.js-export-all-cards-tsv {{_ 'exportAllCardsTsvPopup-title'}}
       hr
       ul.pop-over-list

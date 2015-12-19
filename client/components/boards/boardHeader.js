@@ -17,6 +17,18 @@ Template.boardMenuPopup.events({
   'click .js-export-all-cards-tsv': Popup.open('exportAllCardsTsv'),
 });
 
+Template.boardMenuPopup.helpers({
+  exportUrl() {
+    const boardId = Session.get('currentBoard');
+    const loginToken = Accounts._storedLoginToken();
+    return Meteor.absoluteUrl(`api/boards/${boardId}?authToken=${loginToken}`);
+  },
+  exportFilename() {
+    const boardId = Session.get('currentBoard');
+    return `wekan-export-board-${boardId}.json`;
+  },
+});
+
 Template.boardChangeTitlePopup.events({
   submit(evt, tpl) {
     const newTitle = tpl.$('.js-board-name').val().trim();
