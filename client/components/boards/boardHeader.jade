@@ -89,7 +89,7 @@ template(name="cloneBoardTemplatePopup")
   ul.pop-over-list
     each boards
       li
-        if($eq currentBoardId _id)
+        if(isCurrentBoard _id)
           a.disabled {{title}} ({{_ 'current'}})
         else
           a.js-clone-from-board(id="{{_id}}") {{title}}

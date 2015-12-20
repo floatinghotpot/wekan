@@ -209,8 +209,8 @@ BlazeComponent.extendComponent({
     });
   },
 
-  currentBoardId() {
-    return Session.get('currentBoard');
+  isCurrentBoard(boardId) {
+    return boardId === Session.get('currentBoard');
   },
 
   events() {
