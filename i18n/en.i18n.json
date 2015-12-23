@@ -162,6 +162,7 @@
     "error-user-notCreated": "This user is not created",
     "export-board": "Export board",
     "exportAllCardsTsvPopup-title": "Export All Cards to Excel TSV",
+    "exportSelectionTsvPopup-title": "Export Excel TSV",
     "filter": "Filter",
     "filter-cards": "Filter Cards",
     "filter-clear": "Clear filter",

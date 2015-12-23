@@ -119,6 +119,7 @@ BlazeComponent.extendComponent({
           return popup.call(this.currentData(), evt);
         }
       },
+      'click .js-export-selection-tsv': Popup.open('exportSelectionTsv'),
       'click .js-move-selection': Popup.open('moveSelection'),
       'click .js-archive-selection'() {
         mutateSelectedCards('archive');
@@ -155,4 +156,12 @@ Template.moveSelectionPopup.events({
     mutateSelectedCards('move', this._id);
     EscapeActions.executeUpTo('multiselection');
   },
+});
+
+Template.exportSelectionTsvPopup.onRendered(function() {
+  Meteor.call('exportCsvData', MultiSelection.getMongoSelector(), Session.get('currentBoard'), true, (err, ret) => {
+    if (!err) {
+      $('.js-export-cards-tsv').val(ret);
+    }
+  });
 });

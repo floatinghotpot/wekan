@@ -251,15 +251,16 @@ Meteor.methods({
     }
     return new CsvDataImporter().importCards(rows, data.listId, data.sortIndex);
   },
-  exportCsvData(listId, boardId, tsv) {
+  exportCsvData(selector, boardId, tsv) {
     try {
-      check(listId, Match.OneOf(String, null));
+      check(selector, Match.OneOf(Match.ObjectIncluding({ $and: Match.Any }), String, null));
       check(boardId, String);
       check(tsv, Boolean);
+      if (!selector) selector = { boardId, archived:false };
+      else if (typeof selector === 'string') selector = {listId:selector, boardId, archived:false };
     } catch(e) {
       throw new Meteor.Error('error-json-schema');
     }
-    const filter = listId ? { listId, boardId, archived:false } : { boardId, archived:false };
-    return new CsvDataImporter().exportCards(filter, boardId, tsv);
+    return new CsvDataImporter().exportCards(selector, boardId, tsv);
   },
 });
