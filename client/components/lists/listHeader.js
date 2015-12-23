@@ -40,9 +40,7 @@ Template.listActionPopup.events({
     Popup.close();
   },
   'click .js-import-cards-tsv': Popup.open('listImportCardsTsv'),
-  'click .js-export-cards-tsv': Popup.open('listExportCardsTsv'),
   'click .js-import-card-other-board': Popup.open('importCardFromOtherBoard'),
-  'click .js-import-card': Popup.open('listImportCard'),
   'click .js-import-redminecsv': Popup.open('listImportRedmine'),
   'click .js-list-settings': Popup.open('listSettings'),
   'click .js-close-list'(evt) {
@@ -50,14 +48,6 @@ Template.listActionPopup.events({
     this.archive();
     Popup.close();
   },
-});
-
-Template.listExportCardsTsvPopup.onRendered(function() {
-  Meteor.call('exportCsvData', currentListId, Session.get('currentBoard'), true, (err, ret) => {
-    if (!err) {
-      $('.js-export-cards-tsv').val(ret);
-    }
-  });
 });
 
 BlazeComponent.extendComponent({
