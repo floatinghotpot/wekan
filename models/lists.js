@@ -35,11 +35,7 @@ Lists.attachSchema(new SimpleSchema({
       'done',
     ],
   },
-  members: {
-    type: [String],
-    optional: true,
-  },
-  tags: {
+  watchers: {
     type: [String],
     optional: true,
   },
@@ -77,9 +73,8 @@ Lists.helpers({
   board() {
     return Boards.findOne(this.boardId);
   },
-
-  hasTag(tag) {
-    return this.tags && _.contains(this.tags, tag);
+  hasWatcher(userId) {
+    return _.contains(this.watchers, userId);
   },
 });
 
@@ -96,27 +91,19 @@ Lists.mutations({
     return { $set: {status}};
   },
 
-  assignMember(memberId) {
-    return { $addToSet: { members: memberId }};
+  addWatcher(userId) {
+    return { $addToSet: { watchers: userId }};
   },
 
-  unassignMember(memberId) {
-    return { $pull: { members: memberId }};
+  removeWatcher(userId) {
+    return { $pull: { watchers: userId }};
   },
 
-  addTag(tag) {
-    return { $addToSet: { tags: tag }};
-  },
-
-  removeTag(tag) {
-    return { $pull: { tags: tag }};
-  },
-
-  toggleMember(memberId) {
-    if (this.members && this.members.indexOf(memberId) > -1) {
-      return this.unassignMember(memberId);
+  toggleWatcher(userId) {
+    if (this.hasWatcher(userId)) {
+      return this.removeWatcher(userId);
     } else {
-      return this.assignMember(memberId);
+      return this.addWatcher(userId);
     }
   },
 

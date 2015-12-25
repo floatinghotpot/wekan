@@ -68,6 +68,10 @@ Cards.attachSchema(new SimpleSchema({
     type: Date,
     optional: true,
   },
+  watchers: {
+    type: [String],
+    optional: true,
+  },
 }));
 
 Cards.allow({
@@ -102,6 +106,10 @@ Cards.helpers({
 
   hasLabel(labelId) {
     return _.contains(this.labelIds, labelId);
+  },
+
+  hasWatcher(userId) {
+    return _.contains(this.watchers, userId);
   },
 
   user() {
@@ -141,7 +149,7 @@ Cards.helpers({
   },
 
   rootUrl() {
-    return Meteor.absoluteUrl(this.absoluteUrl().replace('/', ''));
+    return Meteor.absoluteUrl(this.absoluteUrl().replace(/^\//, ''));
   },
 });
 
@@ -238,6 +246,22 @@ Cards.mutations({
       return this.unassignMember(memberId);
     } else {
       return this.assignMember(memberId);
+    }
+  },
+
+  addWatcher(userId) {
+    return { $addToSet: { watchers: userId }};
+  },
+
+  removeWatcher(userId) {
+    return { $pull: { watchers: userId }};
+  },
+
+  toggleWatcher(userId) {
+    if (this.hasWatcher(userId)) {
+      return this.removeWatcher(userId);
+    } else {
+      return this.addWatcher(userId);
     }
   },
 

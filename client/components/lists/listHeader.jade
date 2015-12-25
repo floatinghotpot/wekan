@@ -8,6 +8,8 @@ template(name="listHeader")
         = title
         span.list-header-count ({{cardCount}})
       if currentUser.isBoardMember
+        if isWatching
+          i.list-header-watch-icon.fa.fa-eye
         a.list-header-menu-icon.fa.fa-navicon.js-open-list-menu
       if status
         i.list-header-time-icon.fa.fa-clock-o
@@ -20,6 +22,10 @@ template(name="editListTitleForm")
       a.fa.fa-times-thin.js-close-inlined-form
 
 template(name="listActionPopup")
+  ul.pop-over-list
+    li: a.js-toggle-watch-list {{#if isWatching}}{{_ 'unwatch'}}{{else}}{{_ 'watch'}}{{/if}}
+    li: a.js-list-settings {{_ 'settings'}}
+  hr
   if cards.count
     ul.pop-over-list
       li: a.js-select-cards {{_ 'list-select-cards'}}
@@ -32,9 +38,6 @@ template(name="listActionPopup")
   hr
   ul.pop-over-list
     li: a.js-close-list {{_ 'archive-list'}}
-  hr
-  ul.pop-over-list
-    li: a.js-list-settings {{_ 'settings'}}
 
 template(name="importCardFromOtherBoardPopup")
   ul.pop-over-list
@@ -82,16 +85,6 @@ template(name="listExportCardsTsvPopup")
   textarea.js-export-cards-tsv
 
 template(name="listSettingsPopup")
-  h3
-    i.fa.fa-user
-    | {{_ 'list-members'}}
-  each members
-    +userAvatar(userId=this listId=list._id)
-    | {{! XXX Hack to hide syntaxic coloration /// }}
-  if currentUser.isBoardMember
-    a.member.add-member.js-add-members(title="{{_ 'list-members-title'}}")
-      i.fa.fa-plus
-  hr
   h3 {{_ 'when-drop-card-to-list'}}
   ul.pop-over-list
     li
@@ -118,38 +111,3 @@ template(name="listSettingsPopup")
         | {{_ 'done-task-time'}}
         if($eq list.status "done")
           i.fa.fa-check
-  hr
-  h3
-    i.fa.fa-bell
-    | {{_ 'notify'}}
-  ul.pop-over-list
-    li
-      a.js-list-toggle-notify-owner
-        i.fa.fa-user
-        | {{_ 'card-owner'}}
-        if (list.hasTag "notifyOwner")
-          i.fa.fa-check
-    li
-      a.js-list-toggle-notify-members
-        i.fa.fa-users
-        | {{_ 'card-members'}}
-        if (list.hasTag "notifyMembers")
-          i.fa.fa-check
-    li
-      a.js-list-toggle-notify-list
-        i.fa.fa-users
-        | {{_ 'list-members'}}
-        if (list.hasTag "notifyList")
-          i.fa.fa-check
-
-template(name="listMembersPopup")
-  ul.pop-over-list.js-list-member-list
-    each board.activeMembers
-      li.item(class="{{#if isListMember}}active{{/if}}")
-        a.name.js-select-member(href="#")
-          +userAvatar(userId=user._id listId=list._id)
-          span.full-name
-            = user.profile.fullname
-            | (<span class="username">{{ user.username }}</span>)
-          if isListMember
-            i.fa.fa-check

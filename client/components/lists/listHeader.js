@@ -12,6 +12,11 @@ BlazeComponent.extendComponent({
     }
   },
 
+  isWatching() {
+    const list = this.currentData();
+    return list.hasWatcher(Meteor.userId());
+  },
+
   events() {
     return [{
       'click .js-open-list-menu': Popup.open('listAction'),
@@ -24,6 +29,12 @@ let currentListId = null;
 
 Template.listActionPopup.onRendered(function() {
   currentListId = this.data._id;
+});
+
+Template.listActionPopup.helpers({
+  isWatching() {
+    return this.hasWatcher(Meteor.userId());
+  },
 });
 
 Template.listActionPopup.events({
@@ -43,6 +54,10 @@ Template.listActionPopup.events({
   'click .js-import-card-other-board': Popup.open('importCardFromOtherBoard'),
   'click .js-import-redminecsv': Popup.open('listImportRedmine'),
   'click .js-list-settings': Popup.open('listSettings'),
+  'click .js-toggle-watch-list'() {
+    this.toggleWatcher(Meteor.userId());
+    Popup.close();
+  },
   'click .js-close-list'(evt) {
     evt.preventDefault();
     this.archive();
@@ -121,10 +136,6 @@ BlazeComponent.extendComponent({
     return Lists.findOne(currentListId);
   },
 
-  members() {
-    return this.list().members;
-  },
-
   noStatus() {
     const curList = this.list();
     return (!curList.status);
@@ -137,16 +148,8 @@ BlazeComponent.extendComponent({
     });
   },
 
-  toggle(tag) {
-    const curList = this.list();
-    if (curList.hasTag(tag)) curList.removeTag(tag);
-    else curList.addTag(tag);
-  },
-
   events() {
     return [{
-      'click .js-member': Popup.open('listMember'),
-      'click .js-add-members': Popup.open('listMembers'),
       'click .js-select-none'() {
         this.select(null);
       },
@@ -159,48 +162,9 @@ BlazeComponent.extendComponent({
       'click .js-select-done'() {
         this.select('done');
       },
-      'click .js-list-toggle-notify-owner'() {
-        this.toggle('notifyOwner');
-      },
-      'click .js-list-toggle-notify-members'() {
-        this.toggle('notifyMembers');
-      },
-      'click .js-list-toggle-notify-list'() {
-        this.toggle('notifyList');
-      },
     }];
   },
 }).register('listSettingsPopup');
-
-BlazeComponent.extendComponent({
-  template() {
-    return 'listMembersPopup';
-  },
-
-  list() {
-    return Lists.findOne(currentListId);
-  },
-
-  board() {
-    return Boards.findOne(Session.get('currentBoard'));
-  },
-
-  isListMember() {
-    return _.contains(this.list().members, this.currentData().userId);
-  },
-
-  user() {
-    return Users.findOne(this.currentData().userId);
-  },
-
-  events() {
-    return [{
-      'click .js-select-member'() {
-        this.list().toggleMember(this.currentData().userId);
-      },
-    }];
-  },
-}).register('listMembersPopup');
 
 let csvRedmine = null;
 
