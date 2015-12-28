@@ -3,16 +3,22 @@ template(name="listHeader")
     +inlinedForm
       +editListTitleForm
     else
+      if isMiniScreen
+        if currentList
+          a.list-header-left-icon.fa.fa-angle-left.js-unselect-list
+          a.list-header-menu-icon.fa.fa-navicon.js-open-list-menu
+        else
+          a.list-header-menu-icon.fa.fa-angle-right.js-select-list
+      else if currentUser.isBoardMember
+          a.list-header-menu-icon.fa.fa-navicon.js-open-list-menu
       h2.list-header-name(
         class="{{#if currentUser.isBoardMember}}js-open-inlined-form is-editable{{/if}}")
         = title
         span.list-header-count ({{cardCount}})
-      if currentUser.isBoardMember
-        if isWatching
-          i.list-header-watch-icon.fa.fa-eye
-        a.list-header-menu-icon.fa.fa-navicon.js-open-list-menu
       if status
         i.list-header-time-icon.fa.fa-clock-o
+      if isWatching
+        i.list-header-watch-icon.fa.fa-eye
 
 template(name="editListTitleForm")
   .list-composer
@@ -23,9 +29,8 @@ template(name="editListTitleForm")
 
 template(name="listActionPopup")
   ul.pop-over-list
+    li: a.js-list-settings {{_ 'listSettingsPopup－title'}}
     li: a.js-toggle-watch-list {{#if isWatching}}{{_ 'unwatch'}}{{else}}{{_ 'watch'}}{{/if}}
-    li: a.js-list-settings {{_ 'settings'}}
-  hr
   if cards.count
     ul.pop-over-list
       li: a.js-select-cards {{_ 'list-select-cards'}}

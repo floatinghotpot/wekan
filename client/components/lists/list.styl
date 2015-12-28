@@ -53,12 +53,16 @@
   &.ui-sortable-handle
     cursor: grab
 
+  .list-header-left-icon
+    font-weight: bold
+    color: darken(white, 50%)
+    display: none
+
   .list-header-name
     display: inline
     font-size: 16px
     line-height: 17px
     margin: 0
-    margin-left: 16px
     font-weight: bold
     min-height: 9px
     min-width: 30px
@@ -69,24 +73,23 @@
   .list-header-count
     color: darken(white, 50%)
     font-size: 0.6em
+    padding-left: 5px
+
+  .list-header-time-icon
+    padding-left: 10px
+    color: #a6a6a6
 
   .list-header-watch-icon
     padding-left: 10px
     color: #a6a6a6
 
   .list-header-menu-icon
+    color: darken(white, 50%)
     position: absolute
     padding: 7px
     margin-top: 1px
     top: -@padding
     right: -@padding
-
-  .list-header-time-icon
-    position: absolute
-    padding: 7px
-    margin-top: 1px
-    top: -@padding
-    left: -@padding
 
 .list-body
   flex: 1
@@ -119,3 +122,49 @@
       background: #fafafa
       color: #222
       box-shadow: 0 1px 2px rgba(0,0,0,.2)
+
+@media screen and (max-width: 800px)
+  .mini-list
+    flex: 0 0 60px
+    height: 60px
+    width: 100%
+    border-left: 0px
+    border-bottom: 1px solid darken(white, 20%)
+
+  .list
+    display: block
+    width: 100%
+    border-left: 0px
+
+    &.ui-sortable-helper
+      flex: 0 0 60px
+      height: 60px
+      width: 100%
+      border-left: 0px
+      border-bottom: 1px solid darken(white, 20%)
+
+      .list-header.ui-sortable-handle
+        cursor: grabbing
+
+    &.placeholder
+      flex: 0 0 60px
+      height: 60px
+      width: 100%
+      border-left: 0px
+      border-bottom: 1px solid darken(white, 20%)
+
+  .list-header
+
+    .list-header-left-icon
+      display: inline
+      padding: 7px
+      padding-right: 27px
+      margin-top: 1px
+      top: -@padding
+      left: -@padding
+
+    .list-header-menu-icon
+      position: absolute
+      padding: 7px
+      top: -@padding
+      right: 12px
