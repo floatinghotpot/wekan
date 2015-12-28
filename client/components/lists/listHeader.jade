@@ -29,7 +29,7 @@ template(name="editListTitleForm")
 
 template(name="listActionPopup")
   ul.pop-over-list
-    li: a.js-list-settings {{_ 'listSettingsPopup－title'}}
+    li: a.js-list-settings {{_ 'listSettingsPopup-title'}}
     li: a.js-toggle-watch-list {{#if isWatching}}{{_ 'unwatch'}}{{else}}{{_ 'watch'}}{{/if}}
   if cards.count
     ul.pop-over-list

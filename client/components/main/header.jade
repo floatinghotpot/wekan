@@ -15,7 +15,6 @@ template(name="header")
 
             if currentList
               each currentBoard.lists
-                li.separator |
                 li(class="{{#if $.Session.equals 'currentList' _id}}current{{/if}}")
                   a.js-select-list
                     = title

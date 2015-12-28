@@ -197,12 +197,26 @@
       margin: -10px
 
       li
-        height: 28px
+        height: 100%
+        padding: 12px 0px
+        margin: -10px 0px
 
-      li:first-child
+        a
+          height: 100%
+          padding: 12px 10px
+          margin: -10px 0px
+
+          &:active, &:hover
+            color: #000
+
         .fa-home
           font-size: 26px
           margin-top: -2px
+
+      li:first-child
+        a
+          &:active, &:hover
+            color: inherit
 
     #header-new-board-icon
       display: none
