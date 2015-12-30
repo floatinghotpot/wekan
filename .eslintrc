@@ -59,6 +59,7 @@ globals:
   Random: false
   ReactiveVar: false
   Email: false
+  HTTP: false
   Template: false
 
   # Exported by packages we use

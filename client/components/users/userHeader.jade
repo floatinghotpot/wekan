@@ -44,13 +44,25 @@ template(name="editNotificationPopup")
         i.fa(class="{{#if hasTag 'notify-participate'}}fa-check-square-o{{else}}fa-square-o{{/if}}")
         | {{_ 'participating'}}
         span.sub-name {{_ 'notify-participate'}}
-  hr
   ul.pop-over-list
     li
       a.js-toggle-tag-notify-watch
         i.fa(class="{{#if hasTag 'notify-watch'}}fa-check-square-o{{else}}fa-square-o{{/if}}")
         | {{_ 'watching'}}
         span.sub-name {{_ 'notify-watch'}}
+  hr
+  ul.pop-over-list
+    li
+      a.js-toggle-tag-notify-email
+        i.fa(class="{{#if hasTag 'notify-email'}}fa-check-square-o{{else}}fa-square-o{{/if}}")
+        | {{_ 'email'}}
+        span.sub-name {{_ 'notify-email'}}
+  ul.pop-over-list
+    li
+      a.js-toggle-tag-notify-qq
+        i.fa(class="{{#if hasTag 'notify-qq'}}fa-check-square-o{{else}}fa-square-o{{/if}}")
+        | {{_ 'qq'}}
+        span.sub-name {{_ 'notify-qq'}}
 
 template(name="changePasswordPopup")
   +atForm(state='changePwd')

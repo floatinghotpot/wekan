@@ -53,6 +53,14 @@ Template.editNotificationPopup.events({
     const user = Meteor.user();
     if (user) user.toggleTag('notify-watch');
   },
+  'click .js-toggle-tag-notify-email'() {
+    const user = Meteor.user();
+    if (user) user.toggleTag('notify-email');
+  },
+  'click .js-toggle-tag-notify-qq'() {
+    const user = Meteor.user();
+    if (user) user.toggleTag('notify-qq');
+  },
 });
 
 // XXX For some reason the useraccounts autofocus isnt working in this case.

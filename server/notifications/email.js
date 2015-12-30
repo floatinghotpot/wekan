@@ -1,5 +1,6 @@
 Meteor.startup(() => {
   Notifications.subscribe('email', (user, title, description, params) => {
+    if (!user.hasTag('notify-email')) return;
     try {
       // add quote to make titles easier to read in email text
       const quoteParams = _.clone(params);
@@ -12,7 +13,7 @@ Meteor.startup(() => {
         to: user.emails[0].address,
         from: Accounts.emailTemplates.from,
         subject: TAPi18n.__(title, params, lang),
-        text: `${user.getName()} ${TAPi18n.__(description, quoteParams, lang)}\n\n---\n${params.url}`,
+        text: `${params.user} ${TAPi18n.__(description, quoteParams, lang)}\n\n---\n${params.url}`,
       });
     } catch (e) {
       return;
