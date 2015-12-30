@@ -1,4 +1,4 @@
-Users = Meteor.users; // eslint-disable-line meteor/collections
+Users = Meteor.users;
 
 // Search a user in the complete server database by its name or username. This
 // is used for instance to add a new user to a board.
@@ -50,6 +50,11 @@ Users.helpers({
   hasTag(tag) {
     const {tags = []} = this.profile;
     return _.contains(tags, tag);
+  },
+
+  hasNotification(activityId) {
+    const {notifications = []} = this.profile;
+    return _.contains(notifications, activityId);
   },
 
   getAvatarUrl() {
@@ -140,6 +145,22 @@ Users.mutations({
       this.addTag(tag);
   },
 
+  addNotification(activityId) {
+    return {
+      $addToSet: {
+        'profile.notifications': activityId,
+      },
+    };
+  },
+
+  removeNotification(activityId) {
+    return {
+      $pull: {
+        'profile.notifications': activityId,
+      },
+    };
+  },
+
   setAvatarUrl(avatarUrl) {
     return { $set: { 'profile.avatarUrl': avatarUrl }};
   },
@@ -202,21 +223,19 @@ if (Meteor.isServer) {
       board.addMember(user._id);
       user.addInvite(boardId);
 
-      if (!process.env.MAIL_URL || (!Email)) return { username: user.username };
-
       try {
-        const vars = {
+        const params = {
           user: user.username,
           inviter: inviter.username,
           board: board.title,
-          url: board.rootUrl(),
+          url: board.absoluteUrl(),
         };
         const lang = user.getLanguage();
         Email.send({
           to: user.emails[0].address,
           from: Accounts.emailTemplates.from,
-          subject: TAPi18n.__('email-invite-subject', vars, lang),
-          text: TAPi18n.__('email-invite-text', vars, lang),
+          subject: TAPi18n.__('email-invite-subject', params, lang),
+          text: TAPi18n.__('email-invite-text', params, lang),
         });
       } catch (e) {
         throw new Meteor.Error('email-fail', e.message);

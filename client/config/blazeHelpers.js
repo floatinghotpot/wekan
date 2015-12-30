@@ -23,6 +23,6 @@ Blaze.registerHelper('isMiniScreen', () => Utils.isMiniScreen());
 
 Blaze.registerHelper('getUser', (userId) => Users.findOne(userId));
 
-UI.registerHelper('concat', function (...args) {
+Blaze.registerHelper('concat', function (...args) {
   return Array.prototype.slice.call(args, 0, -1).join('');
 });

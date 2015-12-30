@@ -14,7 +14,7 @@ BlazeComponent.extendComponent({
 
   isWatching() {
     const list = this.currentData();
-    return list.hasWatcher(Meteor.userId());
+    return list.findWatcher(Meteor.userId());
   },
 
   events() {
@@ -36,7 +36,7 @@ Template.listActionPopup.onRendered(function() {
 
 Template.listActionPopup.helpers({
   isWatching() {
-    return this.hasWatcher(Meteor.userId());
+    return this.findWatcher(Meteor.userId());
   },
 });
 
@@ -58,8 +58,11 @@ Template.listActionPopup.events({
   'click .js-import-redminecsv': Popup.open('listImportRedmine'),
   'click .js-list-settings': Popup.open('listSettings'),
   'click .js-toggle-watch-list'() {
-    this.toggleWatcher(Meteor.userId());
-    Popup.close();
+    const currentList = this;
+    const level = currentList.findWatcher(Meteor.userId()) ? null : 'watching';
+    Meteor.call('watch', 'list', currentList._id, level, (err, ret) => {
+      if (!err && ret) Popup.close();
+    });
   },
   'click .js-close-list'(evt) {
     evt.preventDefault();

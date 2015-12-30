@@ -25,7 +25,7 @@ BlazeComponent.extendComponent({
 
   isWatching() {
     const card = this.currentData();
-    return card.hasWatcher(Meteor.userId());
+    return card.findWatcher(Meteor.userId());
   },
 
   scrollParentContainer() {
@@ -166,7 +166,7 @@ Template.registerHelper('toDateTimeString', function(date) {
 
 Template.cardDetailsActionsPopup.helpers({
   isWatching() {
-    return this.hasWatcher(Meteor.userId());
+    return this.findWatcher(Meteor.userId());
   },
 });
 
@@ -182,8 +182,11 @@ Template.cardDetailsActionsPopup.events({
   },
   'click .js-more': Popup.open('cardMore'),
   'click .js-toggle-watch-card'() {
-    this.toggleWatcher(Meteor.userId());
-    Popup.close();
+    const currentCard = this;
+    const level = currentCard.findWatcher(Meteor.userId()) ? null : 'watching';
+    Meteor.call('watch', 'card', currentCard._id, level, (err, ret) => {
+      if (!err && ret) Popup.close();
+    });
   },
 });
 

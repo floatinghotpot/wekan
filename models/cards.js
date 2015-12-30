@@ -108,7 +108,7 @@ Cards.helpers({
     return _.contains(this.labelIds, labelId);
   },
 
-  hasWatcher(userId) {
+  findWatcher(userId) {
     return _.contains(this.watchers, userId);
   },
 
@@ -141,15 +141,11 @@ Cards.helpers({
 
   absoluteUrl() {
     const board = this.board();
-    return FlowRouter.path('card', {
+    return FlowRouter.url('card', {
       boardId: board._id,
       slug: board.slug,
       cardId: this._id,
     });
-  },
-
-  rootUrl() {
-    return Meteor.absoluteUrl(this.absoluteUrl().replace(/^\//, ''));
   },
 });
 
@@ -249,20 +245,10 @@ Cards.mutations({
     }
   },
 
-  addWatcher(userId) {
+  setWatcher(userId, level) {
+    // if level undefined or null or false, then remove
+    if (!level) return { $pull: { watchers: userId }};
     return { $addToSet: { watchers: userId }};
-  },
-
-  removeWatcher(userId) {
-    return { $pull: { watchers: userId }};
-  },
-
-  toggleWatcher(userId) {
-    if (this.hasWatcher(userId)) {
-      return this.removeWatcher(userId);
-    } else {
-      return this.addWatcher(userId);
-    }
   },
 
   setCover(coverId) {

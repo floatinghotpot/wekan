@@ -159,7 +159,7 @@ Boards.helpers({
   },
 
   absoluteUrl() {
-    return FlowRouter.path('board', { id: this._id, slug: this.slug });
+    return FlowRouter.url('board', { id: this._id, slug: this.slug });
   },
 
   rootUrl() {
@@ -178,7 +178,7 @@ Boards.helpers({
     return _id;
   },
 
-  hasWatcher(userId) {
+  findWatcher(userId) {
     return _.contains(this.watchers, userId);
   },
 });
@@ -296,20 +296,10 @@ Boards.mutations({
     };
   },
 
-  addWatcher(userId) {
+  setWatcher(userId, level) {
+    // if level undefined or null or false, then remove
+    if (!level) return { $pull: { watchers: userId }};
     return { $addToSet: { watchers: userId }};
-  },
-
-  removeWatcher(userId) {
-    return { $pull: { watchers: userId }};
-  },
-
-  toggleWatcher(userId) {
-    if (this.hasWatcher(userId)) {
-      return this.removeWatcher(userId);
-    } else {
-      return this.addWatcher(userId);
-    }
   },
 });
 

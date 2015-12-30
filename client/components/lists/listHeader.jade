@@ -31,10 +31,9 @@ template(name="listActionPopup")
   ul.pop-over-list
     li: a.js-list-settings {{_ 'listSettingsPopup-title'}}
     li: a.js-toggle-watch-list {{#if isWatching}}{{_ 'unwatch'}}{{else}}{{_ 'watch'}}{{/if}}
-  if cards.count
-    ul.pop-over-list
+    if cards.count
       li: a.js-select-cards {{_ 'list-select-cards'}}
-    hr
+  hr
   ul.pop-over-list
     li: a.js-add-card {{_ 'add-card'}}
     li: a.js-import-card-other-board {{_ 'import-card-other-board'}}

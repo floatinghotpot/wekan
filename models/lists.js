@@ -73,7 +73,7 @@ Lists.helpers({
   board() {
     return Boards.findOne(this.boardId);
   },
-  hasWatcher(userId) {
+  findWatcher(userId) {
     return _.contains(this.watchers, userId);
   },
 });
@@ -113,6 +113,12 @@ Lists.mutations({
 
   restore() {
     return { $set: { archived: false }};
+  },
+
+  setWatcher(userId, level) {
+    // if level undefined or null or false, then remove
+    if (!level) return { $pull: { watchers: userId }};
+    return { $addToSet: { watchers: userId }};
   },
 });
 

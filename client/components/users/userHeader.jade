@@ -41,16 +41,16 @@ template(name="editNotificationPopup")
   ul.pop-over-list
     li
       a.js-toggle-tag-notify-participate
-        i.fa(class="{{#if hasTag 'notify-participate'}}fa-check-square-o{{else}}fa-square-o{{/if}}") 
+        i.fa(class="{{#if hasTag 'notify-participate'}}fa-check-square-o{{else}}fa-square-o{{/if}}")
         | {{_ 'participating'}}
-  p {{_ 'notify-participate'}}
+        span.sub-name {{_ 'notify-participate'}}
   hr
   ul.pop-over-list
     li
       a.js-toggle-tag-notify-watch
         i.fa(class="{{#if hasTag 'notify-watch'}}fa-check-square-o{{else}}fa-square-o{{/if}}")
         | {{_ 'watching'}}
-  p {{_ 'notify-watch'}}
+        span.sub-name {{_ 'notify-watch'}}
 
 template(name="changePasswordPopup")
   +atForm(state='changePwd')
