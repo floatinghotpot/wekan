@@ -97,6 +97,7 @@ template(name="cardDetails")
             | {{_ 'due-date'}}
           span.card-details-item-content {{forDisplayDate dueDate}}
 
+    .card-details-items
       .card-details-item.card-details-item-actualdate
         h3.card-details-item-title
           i.fa.fa-calendar-check-o
@@ -111,6 +112,13 @@ template(name="cardDetails")
             span.badge-icon.fa.fa-clock-o
             if finishDate
               span.badge-text {{toDateTimeString finishDate}}
+
+      .card-details-item.card-details-item-stage
+        h3.card-details-item-title
+          i.fa.fa-tasks
+          | {{_ 'current'}}
+        {{ list.title }}
+        a.move.js-card-move-list.fa.fa-mail-forward
 
     hr
     h3

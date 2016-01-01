@@ -68,9 +68,13 @@
   .card-description textarea
     min-height: 100px
 
+  hr
+    padding: 0px
+    margin: 5px
+
   .card-details-items
     display: flex
-    margin: 15px 0
+    margin: 10px 0 5px
 
     .card-details-item
       &.card-details-item-labels,
@@ -79,19 +83,22 @@
         flex-shrink: 1
 
     .card-details-item
-      &.card-details-item-manhour
-        width: 20%
+      &.card-details-item-manhour,
+      &.card-details-item-duedate,
+      &.card-details-item-actualdate,
+      &.card-details-item-stage
+        width: 50%
         flex-shrink: 1
 
-    .card-details-item
-      &.card-details-item-duedate
-        width: 38%
-        flex-shrink: 1
+      input
+        padding: 0px
+        margin: 0px
 
-    .card-details-item
-      &.card-details-item-actualdate
-        width: 42%
-        flex-shrink: 1
+      .move
+        padding: 10px
+        margin-left: 5px
+        border-radius: 50%
+        box-shadow: 0 0 0 2px darken(white, 25%) inset
 
   .card-details-item-title
     font-size: 14px

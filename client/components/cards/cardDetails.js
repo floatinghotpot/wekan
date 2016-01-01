@@ -107,6 +107,7 @@ BlazeComponent.extendComponent({
       'click .js-member': Popup.open('cardMember'),
       'click .js-add-members': Popup.open('cardMembers'),
       'click .js-add-labels': Popup.open('cardLabels'),
+      'click .js-card-move-list': Popup.open('moveCard'),
       'mouseenter .js-card-details'() {
         this.parentComponent().showOverlay.set(true);
         this.parentComponent().mouseHasEnterCardDetails = true;
