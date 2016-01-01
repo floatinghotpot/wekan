@@ -117,8 +117,8 @@ template(name="cardDetails")
         h3.card-details-item-title
           i.fa.fa-tasks
           | {{_ 'current'}}
-        {{ list.title }}
-        a.move.js-card-move-list.fa.fa-mail-forward
+        span.card-details-list-title {{ list.title }}
+          a.move.js-card-move-list.fa.fa-mail-forward
 
     hr
     h3
