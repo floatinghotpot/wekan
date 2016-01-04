@@ -63,11 +63,23 @@ if (isSandstorm && Meteor.isServer) {
     // accesses the document, but in case a already known user comes back, we
     // need to update his associated document to match the request HTTP headers
     // informations.
+    // XXX We need to update this document even if the initial route is not `/`.
+    // Unfortuanlty I wasn't able to make the Webapp.rawConnectHandlers solution
+    // work.
     const user = Users.findOne({
       'services.sandstorm.id': req.headers['x-sandstorm-user-id'],
     });
     if (user) {
-      updateUserPermissions(user._id, user.permissions);
+      // XXX At this point the user.services.sandstorm credentials haven't been
+      // updated, which mean that the user will have to restart the application
+      // a second time to see its updated name and avatar.
+      Users.update(user._id, {
+        $set: {
+          'profile.fullname': user.services.sandstorm.name,
+          'profile.avatarUrl': user.services.sandstorm.picture,
+        },
+      });
+      updateUserPermissions(user._id, user.services.sandstorm.permissions);
     }
   });
 
@@ -107,16 +119,17 @@ if (isSandstorm && Meteor.isServer) {
       $set: {
         username: generateUniqueUsername(username, appendNumber),
         'profile.fullname': doc.services.sandstorm.name,
+        'profile.avatarUrl': doc.services.sandstorm.picture,
       },
     });
 
     updateUserPermissions(doc._id, doc.services.sandstorm.permissions);
   });
 
-  // LibreBoard v0.8 didn’t implement the Sandstorm sharing model and instead
-  // kept the visibility setting (“public” or “private”) in the UI as does the
-  // main Meteor application. We need to enforce “public” visibility as the
-  // sharing is now handled by Sandstorm.
+  // Wekan v0.8 didn’t implement the Sandstorm sharing model and instead kept
+  // the visibility setting (“public” or “private”) in the UI as does the main
+  // Meteor application. We need to enforce “public” visibility as the sharing
+  // is now handled by Sandstorm.
   // See https://github.com/wekan/wekan/issues/346
   Migrations.add('enforce-public-visibility-for-sandstorm', () => {
     Boards.update('sandstorm', { $set: { permission: 'public' }});

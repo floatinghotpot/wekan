@@ -9,10 +9,6 @@ const viewTitles = {
 };
 
 BlazeComponent.extendComponent({
-  template() {
-    return 'sidebar';
-  },
-
   mixins() {
     return [Mixins.InfiniteScrolling, Mixins.PerfectScrollbar];
   },
@@ -94,9 +90,7 @@ BlazeComponent.extendComponent({
   },
 
   events() {
-    // XXX Hacky, we need some kind of `super`
-    const mixinEvents = this.getMixin(Mixins.InfiniteScrolling).events();
-    return [...mixinEvents, {
+    return [{
       'click .js-hide-sidebar': this.hide,
       'click .js-toggle-sidebar': this.toggle,
       'click .js-back-home': this.setView,
@@ -195,9 +189,6 @@ Template.labelsWidget.events({
 // autorun function and register a dependency on the both members and labels
 // fields of the current board document.
 function draggableMembersLabelsWidgets() {
-  if (!Meteor.user() || !Meteor.user().isBoardMember())
-    return;
-
   this.autorun(() => {
     const currentBoardId = Tracker.nonreactive(() => {
       return Session.get('currentBoard');
@@ -209,7 +200,8 @@ function draggableMembersLabelsWidgets() {
       },
     });
     Tracker.afterFlush(() => {
-      this.$('.js-member,.js-label').draggable({
+      const $draggables = this.$('.js-member,.js-label');
+      $draggables.draggable({
         appendTo: 'body',
         helper: 'clone',
         revert: 'invalid',
@@ -220,6 +212,14 @@ function draggableMembersLabelsWidgets() {
           EscapeActions.executeUpTo('popup-back');
         },
       });
+
+      function userIsMember() {
+        return Meteor.user() && Meteor.user().isBoardMember();
+      }
+
+      this.autorun(() => {
+        $draggables.draggable('option', 'disabled', !userIsMember());
+      });
     });
   });
 }
@@ -228,10 +228,6 @@ Template.membersWidget.onRendered(draggableMembersLabelsWidgets);
 Template.labelsWidget.onRendered(draggableMembersLabelsWidgets);
 
 BlazeComponent.extendComponent({
-  template() {
-    return 'addMemberPopup';
-  },
-
   onCreated() {
     this.error = new ReactiveVar('');
     this.loading = new ReactiveVar(false);

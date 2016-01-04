@@ -1,8 +1,4 @@
 BlazeComponent.extendComponent({
-  template() {
-    return 'filterSidebar';
-  },
-
   onCreated() {
     this.ownerFilter = new ReactiveVar(false);
   },
@@ -63,10 +59,6 @@ function mutateSelectedCards(mutationName, ...args) {
 }
 
 BlazeComponent.extendComponent({
-  template() {
-    return 'multiselectionSidebar';
-  },
-
   mapSelection(kind, _id) {
     return Cards.find(MultiSelection.getMongoSelector()).map((card) => {
       const methodName = kind === 'label' ? 'hasLabel' : 'isAssigned';
