@@ -1,5 +1,5 @@
 Meteor.startup(() => {
-  // XXX: add activity id to profile.notifications, 
+  // XXX: add activity id to profile.notifications,
   // it can be displayed and rendered on web or mobile UI
   // will uncomment the following code once UI implemented
   //

@@ -50,26 +50,25 @@ if (Meteor.isServer) {
   });
 
   Activities.after.insert((userId, doc) => {
-    const activity = Activities.findOne(doc._id);
-
+    const activity = Activities._transform(doc);
     let participants = [];
     let watchers = [];
-    let title = 'Wekan Notification';
+    let title = 'act-activity-notify';
+    let board = null;
     const description = `act-${activity.activityType}`;
     const params = {
-      activityId: doc._id,
+      activityId: activity._id,
     };
-    if (activity.boardId) {
-      const board = activity.board();
-      watchers = _.union(watchers, board.watchers || []);
-      params.board = board.title;
-      title = 'act-withBoardTitle';
-      params.url = board.absoluteUrl();
-    }
     if (activity.userId) {
       // No need send notification to user of activity
       // participants = _.union(participants, [activity.userId]);
       params.user = activity.user().getName();
+    }
+    if (activity.boardId) {
+      board = activity.board();
+      params.board = board.title;
+      title = 'act-withBoardTitle';
+      params.url = board.absoluteUrl();
     }
     if (activity.memberId) {
       participants = _.union(participants, [activity.memberId]);
@@ -100,6 +99,22 @@ if (Meteor.isServer) {
     if (activity.attachmentId) {
       const attachment = activity.attachment();
       params.attachment = attachment._id;
+    }
+    if (board) {
+      const watchingUsers = _.pluck(_.where(board.watchers, {level: 'watching'}), 'userId');
+      const trackingUsers = _.pluck(_.where(board.watchers, {level: 'tracking'}), 'userId');
+      const mutedUsers = _.pluck(_.where(board.watchers, {level: 'muted'}), 'userId');
+      switch(board.getWatchDefault()) {
+      case 'muted':
+        participants = _.intersection(participants, trackingUsers);
+        watchers = _.intersection(watchers, trackingUsers);
+        break;
+      case 'tracking':
+        participants = _.difference(participants, mutedUsers);
+        watchers = _.difference(watchers, mutedUsers);
+        break;
+      }
+      watchers = _.union(watchers, watchingUsers || []);
     }
 
     Notifications.getUsers(participants, watchers).forEach((user) => {

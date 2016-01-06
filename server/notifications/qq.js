@@ -11,21 +11,21 @@ Meteor.startup(() => {
   Notifications.subscribe('qq', (user, title, description, params) => {
     if (!user.profile.qq) return;
     if (!user.hasTag('notify-qq')) return;
+
+    // add quote to make titles easier to read in email text
+    const quoteParams = _.clone(params);
+    ['card', 'list', 'oldList', 'board', 'comment'].forEach((key) => {
+      if (quoteParams[key]) quoteParams[key] = `"${params[key]}"`;
+    });
+
+    const url = `http://${QQBOT_HOST}:${QQBOT_PORT}/send`;
+    const qqbotParams = {
+      type:'buddy',
+      to: user.profile.qq,
+      msg: `${params.user} ${TAPi18n.__(description, quoteParams, user.getLanguage())}\n${params.url}`,
+    };
+
     try {
-      // add quote to make titles easier to read in email text
-      const quoteParams = _.clone(params);
-      ['card', 'list', 'oldList', 'board', 'comment'].forEach((key) => {
-        if (quoteParams[key]) quoteParams[key] = `"${params[key]}"`;
-      });
-      const lang = user.getLanguage();
-
-      const url = `http://${QQBOT_HOST}:${QQBOT_PORT}/send`;
-      const qqbotParams = {
-        type:'buddy',
-        to: user.profile.qq,
-        msg: `${params.user} ${TAPi18n.__(description, quoteParams, lang)}\n${params.url}`,
-      };
-
       HTTP.post(url, { data: qqbotParams }, (err, res) => {
         if (!err && res) return;
       });

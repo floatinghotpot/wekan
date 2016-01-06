@@ -162,10 +162,6 @@ Boards.helpers({
     return FlowRouter.url('board', { id: this._id, slug: this.slug });
   },
 
-  rootUrl() {
-    return Meteor.absoluteUrl(this.absoluteUrl().replace(/^\//, ''));
-  },
-
   colorClass() {
     return `board-color-${this.color}`;
   },

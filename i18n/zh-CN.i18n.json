@@ -1,5 +1,6 @@
 {
     "accept": "接受",
+    "act-activity-notify": "[Wekan] 更新活动提醒",
     "act-addAttachment": "添加附件 __attachment__ 到 __card__",
     "act-addComment": "在 __card__ 上留言: __comment__",
     "act-createBoard": "创建了 __board__",
@@ -241,6 +242,8 @@
     "moveSelectionPopup-title": "移动所选部分",
     "multi-selection": "多选",
     "multi-selection-on": "多选启用中",
+    "muted": "静默",
+    "muted-info": "您不会收到来自此看板的任何消息通知",
     "my-boards": "我的看板",
     "name": "名称",
     "no-archived-cards": "没有已删除的卡片",
@@ -308,6 +311,8 @@
     "this-card": "该卡片",
     "title": "标题",
     "todo-task-time": "重置卡片时间",
+    "tracking": "跟踪",
+    "tracking-info": "当您作为创建者或成员参与的卡片发生变动时，您会收到消息通知。",
     "unassign-member": "取消分配成员",
     "unsaved-description": "存在未保存的描述",
     "unwatch": "取消关注",
@@ -319,6 +324,7 @@
     "warn-list-archived": "警告: 该卡片位于已删除的清单中",
     "watch": "关注",
     "watching": "关注",
+    "watching-info": "此看板发生的任何活动，您都会收到消息通知。",
     "what-to-do": "要做什么？",
     "when-drop-card-to-list": "当卡片拖入清单时"
 }

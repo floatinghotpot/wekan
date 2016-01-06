@@ -21,25 +21,22 @@ Notifications = {
 
   // filter recipients according to user settings for notification
   getUsers: (participants, watchers) => {
-    const userIds = [];
-    const users = [];
+    const userMap = {};
     participants.forEach((userId) => {
-      if (_.contains(userIds, userId)) return;
+      if (userMap[userId]) return;
       const user = Users.findOne(userId);
       if (user && user.hasTag('notify-participate')) {
-        userIds.push(userId);
-        users.push(user);
+        userMap[userId] = user;
       }
     });
     watchers.forEach((userId) => {
-      if (_.contains(userIds, userId)) return;
+      if (userMap[userId]) return;
       const user = Users.findOne(userId);
       if (user && user.hasTag('notify-watch')) {
-        userIds.push(userId);
-        users.push(user);
+        userMap[userId] = user;
       }
     });
-    return users;
+    return _.map(userMap, (v) => v);
   },
 
   notify: (user, title, description, params) => {

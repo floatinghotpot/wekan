@@ -1,5 +1,6 @@
 {
     "accept": "Accept",
+    "act-activity-notify": "[Wekan] Activity Notification",
     "act-addAttachment": "attached __attachment__ to __card__",
     "act-addComment": "commented on __card__: __comment__",
     "act-createBoard": "created __board__",
@@ -77,6 +78,7 @@
     "boardChangeColorPopup-title": "Change Board Background",
     "boardChangeTitlePopup-title": "Rename Board",
     "boardChangeVisibilityPopup-title": "Change Visibility",
+    "boardChangeWatchPopup-title": "Change Watch",
     "boardImportBoardPopup-title": "Import board from Trello",
     "boardMenuPopup-title": "Board Menu",
     "boards": "Boards",
@@ -240,6 +242,8 @@
     "moveSelectionPopup-title": "Move selection",
     "multi-selection": "Multi-Selection",
     "multi-selection-on": "Multi-Selection is on",
+    "muted": "Muted",
+    "muted-info": "You will never be notified of any changes in this board",
     "my-boards": "My Boards",
     "name": "Name",
     "name": "Name",
@@ -261,6 +265,7 @@
     "participating": "Participating",
     "password": "Password",
     "paste-or-dragdrop": "to paste, or drag & drop image file to it (image only)",
+    "participating": "Participating",
     "preview": "Preview",
     "previewAttachedImagePopup-title": "Preview",
     "previewClipboardImagePopup-title": "Preview",
@@ -308,6 +313,8 @@
     "this-card": "this card",
     "title": "Title",
     "todo-task-time": "Cear card actual date",
+    "tracking": "Tracking",
+    "tracking-info": "You will be notified of any changes to those cards you are involved as creator or member.",
     "unassign-member": "Unassign member",
     "unsaved-description": "You have an unsaved description.",
     "unwatch": "Unwatch",
@@ -319,6 +326,7 @@
     "warn-list-archived": "warning: this card is in an archived list",
     "watch": "Watch",
     "watching": "Watching",
+    "watching-info": "You will be notified of any change in this board",
     "what-to-do": "What do you want to do?",
     "when-drop-card-to-list": "When drop card into list"
 }

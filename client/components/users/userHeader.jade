@@ -40,28 +40,35 @@ template(name="editProfilePopup")
 template(name="editNotificationPopup")
   ul.pop-over-list
     li
-      a.js-toggle-tag-notify-participate
-        i.fa(class="{{#if hasTag 'notify-participate'}}fa-check-square-o{{else}}fa-square-o{{/if}}")
-        | {{_ 'participating'}}
-        span.sub-name {{_ 'notify-participate'}}
-  ul.pop-over-list
-    li
       a.js-toggle-tag-notify-watch
-        i.fa(class="{{#if hasTag 'notify-watch'}}fa-check-square-o{{else}}fa-square-o{{/if}}")
+        i.fa.fa-eye.colorful
         | {{_ 'watching'}}
+        if hasTag "notify-watch"
+          i.fa.fa-check
         span.sub-name {{_ 'notify-watch'}}
+    li
+      a.js-toggle-tag-notify-participate
+        i.fa.fa-bell.colorful
+        | {{_ 'tracking'}}
+        if hasTag "notify-participate"
+          i.fa.fa-check
+        span.sub-name {{_ 'notify-participate'}}
   hr
   ul.pop-over-list
     li
       a.js-toggle-tag-notify-email
-        i.fa(class="{{#if hasTag 'notify-email'}}fa-check-square-o{{else}}fa-square-o{{/if}}")
+        i.fa.fa-envelope.colorful
         | {{_ 'email'}}
+        if hasTag "notify-email"
+          i.fa.fa-check
         span.sub-name {{_ 'notify-email'}}
   ul.pop-over-list
     li
       a.js-toggle-tag-notify-qq
-        i.fa(class="{{#if hasTag 'notify-qq'}}fa-check-square-o{{else}}fa-square-o{{/if}}")
+        i.fa.fa-qq.colorful
         | {{_ 'qq'}}
+        if hasTag "notify-qq"
+          i.fa.fa-check
         span.sub-name {{_ 'notify-qq'}}
 
 template(name="changePasswordPopup")

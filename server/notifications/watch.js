@@ -3,7 +3,7 @@ Meteor.methods({
     check(watchableType, String);
     check(id, String);
     check(level, Match.OneOf(String, null));
-    
+
     const userId = Meteor.userId();
 
     let watchableObj = null;
@@ -26,8 +26,8 @@ Meteor.methods({
     } else {
       throw new Meteor.Error('error-json-schema');
     }
-    
-    if ((board.permission === 'private') && !board.hasMember(userId)) 
+
+    if ((board.permission === 'private') && !board.hasMember(userId))
       throw new Meteor.Error('error-board-notAMember');
 
     watchableObj.setWatcher(userId, level);

@@ -32,7 +32,7 @@ Template.boardMenuPopup.helpers({
   exportUrl() {
     const boardId = Session.get('currentBoard');
     const loginToken = Accounts._storedLoginToken();
-    return Meteor.absoluteUrl(`api/boards/${boardId}?authToken=${loginToken}`);
+    return FlowRouter.url(`api/boards/${boardId}?authToken=${loginToken}`);
   },
   exportFilename() {
     const boardId = Session.get('currentBoard');
@@ -54,9 +54,9 @@ Template.boardChangeTitlePopup.events({
 });
 
 BlazeComponent.extendComponent({
-  isWatching() {
+  watchLevel() {
     const currentBoard = Boards.findOne(Session.get('currentBoard'));
-    return currentBoard.findWatcher(Meteor.userId());
+    return currentBoard.getWatchLevel(Meteor.userId());
   },
 
   isStarred() {
@@ -79,6 +79,7 @@ BlazeComponent.extendComponent({
       },
       'click .js-open-board-menu': Popup.open('boardMenu'),
       'click .js-change-visibility': Popup.open('boardChangeVisibility'),
+      'click .js-watch-board': Popup.open('boardChangeWatch'),
       'click .js-open-filter-view'() {
         Sidebar.setView('filter');
       },
@@ -192,10 +193,6 @@ BlazeComponent.extendComponent({
 }).register('boardChangeVisibilityPopup');
 
 BlazeComponent.extendComponent({
-  template() {
-    return 'cloneBoardTemplatePopup';
-  },
-
   boards() {
     return Boards.find({
       archived: false,
@@ -234,3 +231,25 @@ Template.exportAllCardsTsvPopup.onRendered(function() {
     }
   });
 });
+
+BlazeComponent.extendComponent({
+  watchLevel() {
+    const currentBoard = Boards.findOne(Session.get('currentBoard'));
+    return currentBoard.getWatchLevel(Meteor.userId());
+  },
+
+  watchCheck() {
+    return this.currentData() === this.watchLevel();
+  },
+
+  events() {
+    return [{
+      'click .js-select-watch'() {
+        const level = this.currentData();
+        Meteor.call('watch', 'board', Session.get('currentBoard'), level, (err, ret) => {
+          if (!err && ret) Popup.close();
+        });
+      },
+    }];
+  },
+}).register('boardChangeWatchPopup');
