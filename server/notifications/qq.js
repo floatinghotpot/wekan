@@ -1,6 +1,6 @@
 // notification service for QQ, IM services used by 600M people in China
 
-// qqbot required, see: 
+// qqbot required, see:
 // https://github.com/floatinghotpot/qqbot
 
 Meteor.startup(() => {

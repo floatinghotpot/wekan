@@ -140,7 +140,7 @@ class CsvDataImporter {
 
     return card.title ? Cards.insert(card) : null;
   }
-  
+
   importCards(rows, listId, sortIndex) {
     this.list = Lists.findOne(listId);
     this.board = this.list.board();
