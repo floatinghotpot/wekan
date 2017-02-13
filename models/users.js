@@ -195,12 +195,7 @@ if (Meteor.isServer) {
 
       const inviter = Meteor.user();
       const board = Boards.findOne(boardId);
-      const allowInvite = inviter &&
-          board &&
-          board.members &&
-          _.contains(_.pluck(board.members, 'userId'), inviter._id) &&
-          _.where(board.members, {userId: inviter._id})[0].isActive &&
-          _.where(board.members, {userId: inviter._id})[0].isAdmin;
+      const allowInvite = inviter && board && board.hasAdmin(inviter._id);
       if (!allowInvite) throw new Meteor.Error('error-board-notAMember');
 
       this.unblock();

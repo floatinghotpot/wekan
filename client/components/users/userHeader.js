@@ -22,9 +22,11 @@ Template.editProfilePopup.events({
     const fullname = tpl.find('.js-profile-fullname').value.trim();
     const username = tpl.find('.js-profile-username').value.trim();
     const initials = tpl.find('.js-profile-initials').value.trim();
+    const qq = tpl.find('.js-profile-qq').value.trim();
     Users.update(Meteor.userId(), {$set: {
       'profile.fullname': fullname,
       'profile.initials': initials,
+      'profile.qq': qq,
     }});
     // XXX We should report the error to the user.
     if (username !== Meteor.user().username) {
@@ -50,6 +52,14 @@ Template.editNotificationPopup.events({
   'click .js-toggle-tag-notify-watch'() {
     const user = Meteor.user();
     if (user) user.toggleTag('notify-watch');
+  },
+  'click .js-toggle-tag-notify-email'() {
+    const user = Meteor.user();
+    if (user) user.toggleTag('notify-email');
+  },
+  'click .js-toggle-tag-notify-qq'() {
+    const user = Meteor.user();
+    if (user) user.toggleTag('notify-qq');
   },
 });
 

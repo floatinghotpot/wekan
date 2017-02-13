@@ -41,7 +41,9 @@ Template.editor.onRendered(() => {
       },
       index: 1,
     },
-  ]);
+  ], {
+    maxCount: 30,
+  });
 });
 
 // XXX I believe we should compute a HTML rendered field on the server that
@@ -54,7 +56,7 @@ const at = HTML.CharRef({html: '&commat;', str: '@'});
 Blaze.Template.registerHelper('mentions', new Template('mentions', function() {
   const view = this;
   const currentBoard = Boards.findOne(Session.get('currentBoard'));
-  const knowedUsers = currentBoard.members.map((member) => {
+  const knowedUsers = currentBoard.activeMembers().map((member) => {
     member.username = Users.findOne(member.userId).username;
     return member;
   });

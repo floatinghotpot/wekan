@@ -51,6 +51,27 @@ Cards.attachSchema(new SimpleSchema({
     type: Number,
     decimal: true,
   },
+  dueDate: {
+    type: Date,
+    optional: true,
+  },
+  manHour: {
+    type: Number,
+    decimal: true,
+    optional: true,
+  },
+  startDate: {
+    type: Date,
+    optional: true,
+  },
+  finishDate: {
+    type: Date,
+    optional: true,
+  },
+  watchers: {
+    type: [String],
+    optional: true,
+  },
 }));
 
 Cards.allow({
@@ -85,6 +106,10 @@ Cards.helpers({
 
   hasLabel(labelId) {
     return _.contains(this.labelIds, labelId);
+  },
+
+  findWatcher(userId) {
+    return _.contains(this.watchers, userId);
   },
 
   user() {
@@ -137,8 +162,24 @@ Cards.mutations({
     return { $set: { title }};
   },
 
+  setDueDate(dueDate) {
+    return { $set: { dueDate }};
+  },
+
   setDescription(description) {
     return { $set: { description }};
+  },
+
+  setManHour(manHour) {
+    return { $set: { manHour }};
+  },
+
+  setStartDate(startDate) {
+    return { $set: { startDate }};
+  },
+
+  setFinishDate(finishDate) {
+    return { $set: { finishDate }};
   },
 
   move(listId, sortIndex) {
@@ -146,6 +187,29 @@ Cards.mutations({
     if (sortIndex) {
       mutatedFields.sort = sortIndex;
     }
+
+    if(this.listId !== listId) {
+      const oldStatus = Lists.findOne(this.listId).status;
+      const newStatus = Lists.findOne(listId).status;
+      const now = new Date();
+      if(oldStatus !== newStatus) {
+        switch(newStatus) {
+        case 'todo':
+          mutatedFields.startDate = null;
+          mutatedFields.finishDate = null;
+          break;
+        case 'doing':
+          if (!this.startDate) mutatedFields.startDate = now;
+          mutatedFields.finishDate = null;
+          break;
+        case 'done':
+          if (!this.startDate) mutatedFields.startDate = now;
+          if (!this.finishDate) mutatedFields.finishDate = now;
+          break;
+        }
+      }
+    }
+
     return { $set: mutatedFields };
   },
 
@@ -179,6 +243,12 @@ Cards.mutations({
     } else {
       return this.assignMember(memberId);
     }
+  },
+
+  setWatcher(userId, level) {
+    // if level undefined or null or false, then remove
+    if (!level) return { $pull: { watchers: userId }};
+    return { $addToSet: { watchers: userId }};
   },
 
   setCover(coverId) {

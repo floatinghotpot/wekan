@@ -3,13 +3,22 @@ template(name="listHeader")
     +inlinedForm
       +editListTitleForm
     else
+      if isMiniScreen
+        if currentList
+          a.list-header-left-icon.fa.fa-angle-left.js-unselect-list
+          a.list-header-menu-icon.fa.fa-navicon.js-open-list-menu
+        else
+          a.list-header-menu-icon.fa.fa-angle-right.js-select-list
+      else if currentUser.isBoardMember
+          a.list-header-menu-icon.fa.fa-navicon.js-open-list-menu
       h2.list-header-name(
         class="{{#if currentUser.isBoardMember}}js-open-inlined-form is-editable{{/if}}")
         = title
-      if currentUser.isBoardMember
-        if isWatching
-          i.list-header-watch-icon.fa.fa-eye
-        a.list-header-menu-icon.fa.fa-navicon.js-open-list-menu
+        span.list-header-count ({{cardCount}})
+      if status
+        i.list-header-time-icon.fa.fa-clock-o
+      if isWatching
+        i.list-header-watch-icon.fa.fa-eye
 
 template(name="editListTitleForm")
   .list-composer
@@ -20,15 +29,35 @@ template(name="editListTitleForm")
 
 template(name="listActionPopup")
   ul.pop-over-list
+    li: a.js-list-settings {{_ 'listSettingsPopup-title'}}
     li: a.js-toggle-watch-list {{#if isWatching}}{{_ 'unwatch'}}{{else}}{{_ 'watch'}}{{/if}}
-  hr
-  ul.pop-over-list
-    li: a.js-add-card {{_ 'add-card'}}
     if cards.count
       li: a.js-select-cards {{_ 'list-select-cards'}}
   hr
   ul.pop-over-list
+    li: a.js-add-card {{_ 'add-card'}}
+    li: a.js-import-card-other-board {{_ 'import-card-other-board'}}
+    li: a.js-import-cards-tsv {{_ 'listImportCardsTsvPopup-title'}}
+    li: a.js-import-redminecsv {{_ 'listImportRedminePopup-title'}}
+  hr
+  ul.pop-over-list
     li: a.js-close-list {{_ 'archive-list'}}
+
+template(name="importCardFromOtherBoardPopup")
+  ul.pop-over-list
+    each boards
+      li
+        if($eq currentBoard._id _id)
+          a.disabled {{title}} ({{_ 'current'}})
+        else
+          a.js-select-list-from-board {{title}}
+
+template(name="importCardFromOtherListPopup")
+  ul.pop-over-list
+    each lists
+      unless archived
+        li
+          a.js-import-card-from-list {{title}}
 
 template(name="boardLists")
   ul.pop-over-list
@@ -38,3 +67,51 @@ template(name="boardLists")
           a.disabled {{title}} ({{_ 'current'}})
         else
           a.js-select-list= title
+
+template(name="listImportRedminePopup")
+  if error.get
+    .warning {{_ error.get}}
+  form
+    label(for='file-redminecsv') {{_ "select-redminecsv"}}
+      input#file-redminecsv.js-select-redminecsv(type="file")
+    label(for='encoding-csv') {{_ "charset-encoding"}}
+      select#encoding-csv.js-encodingcsv
+        each csvEncodings
+          option(value="{{this}}") {{this.toUpperCase}}
+    label(for='file-mappingcsv') {{_ "select-mappingcsv"}}
+      textarea#file-mappingcsv.js-select-mappingcsv
+        = board.dataMapping
+    hr
+    input.primary.wide.js-import-now(type="submit" value="{{_ 'import'}}")
+
+template(name="listExportCardsTsvPopup")
+  span {{_ 'select-and-copy'}}
+  textarea.js-export-cards-tsv
+
+template(name="listSettingsPopup")
+  h3 {{_ 'when-drop-card-to-list'}}
+  ul.pop-over-list
+    li
+      a.js-select-none
+        i.fa.fa-clock-o
+        | {{_ 'none-task-time'}}
+        if noStatus
+          i.fa.fa-check
+    li
+      a.js-select-todo
+        i.fa.fa-clock-o
+        | {{_ 'todo-task-time'}}
+        if($eq list.status "todo")
+          i.fa.fa-check
+    li
+      a.js-select-doing
+        i.fa.fa-clock-o
+        | {{_ 'doing-task-time'}}
+        if($eq list.status "doing")
+          i.fa.fa-check
+    li
+      a.js-select-done
+        i.fa.fa-clock-o
+        | {{_ 'done-task-time'}}
+        if($eq list.status "done")
+          i.fa.fa-check

@@ -13,6 +13,8 @@ Template.boardMenuPopup.events({
     // confirm that the board was successfully archived.
     FlowRouter.go('home');
   }),
+  'click .js-clone-template': Popup.open('cloneBoardTemplate'),
+  'click .js-export-all-cards-tsv': Popup.open('exportAllCardsTsv'),
 });
 
 Template.boardMenuPopup.helpers({
@@ -50,10 +52,6 @@ BlazeComponent.extendComponent({
     const boardId = Session.get('currentBoard');
     const user = Meteor.user();
     return user && user.hasStarred(boardId);
-  },
-
-  isMiniScreen() {
-    return Utils.isMiniScreen();
   },
 
   // Only show the star counter if the number of star is greater than 2
@@ -184,9 +182,49 @@ BlazeComponent.extendComponent({
 }).register('boardChangeVisibilityPopup');
 
 BlazeComponent.extendComponent({
+  boards() {
+    return Boards.find({
+      archived: false,
+      'members.userId': Meteor.userId(),
+    }, {
+      sort: ['title'],
+    });
+  },
+
+  isCurrentBoard(boardId) {
+    return boardId === Session.get('currentBoard');
+  },
+
+  events() {
+    return [{
+      'click .js-clone-from-board'(evt, tpl) {
+        const fromId = $(evt.currentTarget).attr('id').trim();
+        if(fromId) {
+          Popup.afterConfirm('confirmCloneTemplate', () => {
+            Meteor.call('cloneBoardTemplate', Session.get('currentBoard'), fromId, (err, ret) => {
+              if (!err && ret) {
+                Popup.close();
+              }
+            });
+          }).call(this, evt, tpl);
+        }
+      },
+    }];
+  },
+}).register('cloneBoardTemplatePopup');
+
+Template.exportAllCardsTsvPopup.onRendered(function() {
+  Meteor.call('exportCsvData', null, Session.get('currentBoard'), true, (err, ret) => {
+    if (!err) {
+      $('.js-export-all-cards-tsv').val(ret);
+    }
+  });
+});
+
+BlazeComponent.extendComponent({
   watchLevel() {
     const currentBoard = Boards.findOne(Session.get('currentBoard'));
-    return currentBoard.getWatchLevel(Meteor.userId());
+    return currentBoard && currentBoard.getWatchLevel(Meteor.userId());
   },
 
   watchCheck() {

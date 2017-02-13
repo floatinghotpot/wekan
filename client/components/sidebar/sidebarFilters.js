@@ -1,4 +1,16 @@
 BlazeComponent.extendComponent({
+  onCreated() {
+    this.ownerFilter = new ReactiveVar(false);
+  },
+
+  isOwnerFilter() {
+    return this.ownerFilter.get();
+  },
+
+  setOwnerFilter(tf) {
+    return this.ownerFilter.set(tf);
+  },
+
   events() {
     return [{
       'click .js-toggle-label-filter'(evt) {
@@ -6,9 +18,23 @@ BlazeComponent.extendComponent({
         Filter.labelIds.toggle(this.currentData()._id);
         Filter.resetExceptions();
       },
+      'click .js-set-owner-filter'(evt) {
+        evt.stopPropagation();
+        Filter.reset();
+        this.setOwnerFilter(true);
+      },
+      'click .js-unset-owner-filter'(evt) {
+        evt.stopPropagation();
+        Filter.reset();
+        this.setOwnerFilter(false);
+      },
       'click .js-toggle-member-filter'(evt) {
         evt.preventDefault();
-        Filter.members.toggle(this.currentData()._id);
+        if (this.isOwnerFilter()) {
+          Filter.userId.toggle(this.currentData()._id);
+        } else {
+          Filter.members.toggle(this.currentData()._id);
+        }
         Filter.resetExceptions();
       },
       'click .js-clear-all'(evt) {
@@ -85,6 +111,7 @@ BlazeComponent.extendComponent({
           return popup.call(this.currentData(), evt);
         }
       },
+      'click .js-export-selection-tsv': Popup.open('exportSelectionTsv'),
       'click .js-move-selection': Popup.open('moveSelection'),
       'click .js-archive-selection'() {
         mutateSelectedCards('archive');
@@ -121,4 +148,12 @@ Template.moveSelectionPopup.events({
     mutateSelectedCards('move', this._id);
     EscapeActions.executeUpTo('multiselection');
   },
+});
+
+Template.exportSelectionTsvPopup.onRendered(function() {
+  Meteor.call('exportCsvData', MultiSelection.getMongoSelector(), Session.get('currentBoard'), true, (err, ret) => {
+    if (!err) {
+      $('.js-export-cards-tsv').val(ret);
+    }
+  });
 });

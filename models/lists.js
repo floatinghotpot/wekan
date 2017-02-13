@@ -25,6 +25,20 @@ Lists.attachSchema(new SimpleSchema({
     denyInsert: true,
     optional: true,
   },
+  status: {
+    type: String,
+    optional: true,
+    allowedValues: [
+      null,
+      'todo',
+      'doing',
+      'done',
+    ],
+  },
+  watchers: {
+    type: [String],
+    optional: true,
+  },
 }));
 
 Lists.allow({
@@ -48,12 +62,19 @@ Lists.helpers({
     }), { sort: ['sort'] });
   },
 
+  cardCount() {
+    return this.cards().count();
+  },
+
   allCards() {
     return Cards.find({ listId: this._id });
   },
 
   board() {
     return Boards.findOne(this.boardId);
+  },
+  findWatcher(userId) {
+    return _.contains(this.watchers, userId);
   },
 });
 
@@ -62,12 +83,42 @@ Lists.mutations({
     return { $set: { title }};
   },
 
+  change(title, sort) {
+    return { $set: {title, sort}};
+  },
+
+  setStatus(status) {
+    return { $set: {status}};
+  },
+
+  addWatcher(userId) {
+    return { $addToSet: { watchers: userId }};
+  },
+
+  removeWatcher(userId) {
+    return { $pull: { watchers: userId }};
+  },
+
+  toggleWatcher(userId) {
+    if (this.hasWatcher(userId)) {
+      return this.removeWatcher(userId);
+    } else {
+      return this.addWatcher(userId);
+    }
+  },
+
   archive() {
     return { $set: { archived: true }};
   },
 
   restore() {
     return { $set: { archived: false }};
+  },
+
+  setWatcher(userId, level) {
+    // if level undefined or null or false, then remove
+    if (!level) return { $pull: { watchers: userId }};
+    return { $addToSet: { watchers: userId }};
   },
 });
 

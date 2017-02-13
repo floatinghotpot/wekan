@@ -75,6 +75,14 @@ Boards.attachSchema(new SimpleSchema({
     type: String,
     optional: true,
   },
+  watchers: {
+    type: [String],
+    optional: true,
+  },
+  dataMapping: {
+    type: String,
+    optional: true,
+  },
 }));
 
 
@@ -165,6 +173,10 @@ Boards.helpers({
     Boards.direct.update(this._id, { $push: {labels: { _id, name, color }}});
     return _id;
   },
+
+  findWatcher(userId) {
+    return _.contains(this.watchers, userId);
+  },
 });
 
 Boards.mutations({
@@ -190,6 +202,10 @@ Boards.mutations({
 
   setVisibility(visibility) {
     return { $set: { permission: visibility }};
+  },
+
+  updateDataMapping(dataMapping) {
+    return { $set: { dataMapping }};
   },
 
   addLabel(name, color) {
@@ -275,6 +291,12 @@ Boards.mutations({
       },
     };
   },
+
+  setWatcher(userId, level) {
+    // if level undefined or null or false, then remove
+    if (!level) return { $pull: { watchers: userId }};
+    return { $addToSet: { watchers: userId }};
+  },
 });
 
 if (Meteor.isServer) {
@@ -332,6 +354,95 @@ if (Meteor.isServer) {
           return true;
         } else throw new Meteor.Error('error-board-notAMember');
       } else throw new Meteor.Error('error-board-doesNotExist');
+    },
+
+    cloneBoardTemplate(toId, fromId) {
+      check(toId, String);
+      check(fromId, String);
+
+      const toBoard = Boards.findOne(toId);
+      const fromBoard = Boards.findOne(fromId);
+      if (!toBoard || !fromBoard) throw new Meteor.Error('error-board-doesNotExist');
+
+      const userId = Meteor.userId();
+      if (!toBoard.hasAdmin(userId)) throw new Meteor.Error('error-board-notAdmin');
+      if (!fromBoard.hasMember(userId)) throw new Meteor.Error('error-board-notAMember');
+
+      // copy members
+      const newMembers = toBoard.members;
+      newMembers.forEach((member) => {
+        // disable old members, unless self, who is admin
+        // instead of removing, we just disable, as they may be referenced in history activities
+        if(member.userId !== userId) member.isActive = false;
+      });
+      fromBoard.members.forEach((member) => {
+        const index = _.pluck(newMembers, 'userId').indexOf(member.userId);
+        if (index >= 0) {
+          if(member.userId !== userId) {
+            newMembers[index].isActive = member.isActive;
+            newMembers[index].isAdmin = member.isAdmin;
+          }
+        } else {
+          newMembers.push(_.clone(member));
+          // notify new member for invitation
+          const user = Users.findOne(member.userId);
+          if (user) {
+            user.addInvite(toId);
+          }
+        }
+      });
+
+      // copy labels
+      const newLabels = [];
+      const toLabels = toBoard.labels;
+      const fromLabels = fromBoard.labels;
+      // for common labels in both boards, we keep the label Id no change
+      toBoard.labels.forEach((label) => {
+        if (_.findWhere(fromLabels, { name: label.name, color: label.color })) newLabels.push(_.clone(label));
+      });
+      // add new labels
+      fromBoard.labels.forEach((label) => {
+        if (!_.findWhere(toLabels, { name: label.name, color: label.color })) newLabels.push(_.clone(label));
+      });
+
+      Boards.update(toId, {
+        $set: {
+          members: newMembers,
+          labels: newLabels,
+          color: fromBoard.color,
+          description: fromBoard.description,
+          dataMapping: fromBoard.dataMapping,
+        },
+      });
+
+      // copy lists
+      const copyLists = [];
+      const srcLists = Lists.find({boardId: fromId}, { sort: ['sort'] }).fetch();
+      srcLists.forEach((list) => {
+        if (!list.archived) {
+          const other = _.omit(list, ['_id', 'boardId', 'createdAt', 'updatedAt', '__proto__']);
+          other.boardId = toId;
+          copyLists.push(other);
+        }
+      });
+      let i = 0;
+      // we reuse and rename the existing lists, and archive the rest
+      const dstLists = Lists.find({boardId: toId}, { sort: ['sort'] }).fetch();
+      dstLists.forEach((list) => {
+        if(list.archived) return;
+        if(i < copyLists.length) {
+          Lists.update(list._id, { $set: copyLists[i++] });
+        } else {
+          Lists.update(list._id, { $set: { archived: true }});
+        }
+      });
+      // if not enough, create new lists
+      while(i < copyLists.length) {
+        copyLists[i].createdAt = new Date();
+        Lists.insert( copyLists[i++] );
+      }
+
+      return true;
     },
   });
 }
